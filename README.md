@@ -1,21 +1,21 @@
 
 ## 运行
 ```
-yarnpkg install
+yarn install
 ```
 
 ### 开发环境热更新
 ```
-yarnpkg serve
+yarn serve
 ```
 
 ### 生产打包
 ```
-yarnpkg build
+yarn build
 ```
 
 ### 修复文件格式
 ```
-yarnpkg lint
+yarn lint
 ```
 
