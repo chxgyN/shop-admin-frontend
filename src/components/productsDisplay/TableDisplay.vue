@@ -51,7 +51,7 @@
         <template #default="scope">
           <el-button
             size="small"
-            :disabled="!hasAuth('EDIT_PRODUCT')"
+            :disabled="!isPermissions('EDIT_PRODUCT')"
             @click="$emit('editProduct', scope.row)"
           >
             编辑
@@ -66,7 +66,7 @@
               <el-button
                 size="small"
                 type="danger"
-                :disabled="!hasAuth('EDIT_PRODUCT')"
+                :disabled="!isPermissions('EDIT_PRODUCT')"
               >
                 删除
               </el-button>
@@ -92,11 +92,11 @@
 import { defineComponent, ref } from 'vue'
 import columns from './tableColumns'
 import productsDisplayMixin from '@/mixins/productsDisplayMixin'
-import authMixin from '@/mixins/authMixin'
+import isPermissions from '@/hook/isPermissions'
 
 export default defineComponent({
   name: 'TableDisplay',
-  mixins: [productsDisplayMixin, authMixin],
+  mixins: [productsDisplayMixin],
   setup () {
     const products = ref([])
     const selectedRows = ref([])
@@ -106,12 +106,15 @@ export default defineComponent({
       pageIdx: 1,
       pageSize: 6
     }
+    // const disabled = !isPermissions('EDIT_PRODUCT')
     return {
       columns,
       products,
       selectedRows,
       loading,
-      pagination
+      pagination,
+      // disabled,
+      isPermissions
     }
   },
   methods: {

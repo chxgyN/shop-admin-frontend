@@ -7,7 +7,7 @@
       class="header__title"
       style="color: #66b1ff;"
     >
-      超市进销存管理系统
+      零食量贩店进销存系统
     </h1>
     <div class="header__item">
       <div
@@ -15,7 +15,8 @@
         class="header__item"
         style="cursor: default;"
       >
-        <UserAvatar :avatar="$store.state.user.avatar" />
+        <UserAvatar/>
+        <!-- <UserAvatar :avatar="$store.state.user.avatar" /> -->
         <span>{{ username }}</span>
       </div>
       <el-divider direction="vertical" />
@@ -69,7 +70,8 @@ export default defineComponent({
     logout () {
       this.$store.commit('setUser', {})
       localStorage.setItem('userInfo', '')
-      this.$router.replace({ path: '/loginOrRegister/login' })
+      this.$router.replace({ path: '/login' })
+      // this.$router.replace({ path: '/loginOrRegister/login' })
     }
   }
 })

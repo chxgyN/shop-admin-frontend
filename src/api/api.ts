@@ -28,103 +28,34 @@ export const productSuggest = (data: any) => http({url: '/productSuggest', metho
 // purchase
 export const addPurchaseOrder = (data: addPurchaseOrderType) => http({url: '/addPurchaseOrder', method: 'POST', data})
 
-export const deletePurchaseOrder = (data: any) => http({
-    url: '/purchaseOrder',
-    method: 'DELETE',
-    data
-  })
+export const deletePurchaseOrder = (data: any) => http({url: '/purchaseOrder', method: 'DELETE', data})
 
-export const getPurchaseOrder = (data: any) => http({
-    url: '/purchaseOrder',
-    method: 'GET',
-    data
-  })
+export const getPurchaseOrder = (data: any) => http({url: '/purchaseOrder', method: 'GET', data})
 
-export const getAllPurchaseOrders = (data: any) => http({
-    url: '/allPurchaseOrders',
-    method: 'GET',
-    data
-  })
+export const getAllPurchaseOrders = (data: any) => http({url: '/allPurchaseOrders', method: 'GET', data})
 
-export const changePurchaseOrderStatus = (data: any) => http({
-    url: '/changePurchaseOrderStatus',
-    method: 'PUT',
-    data
-  })
-
+export const changePurchaseOrderStatus = (data: any) => http({url: '/changePurchaseOrderStatus', method: 'PUT', data})
 // productInventoryChange
-export const getProductInventoryChange = (data: any) => http({
-    url: '/productInventoryChange',
-    method: 'GET',
-    data
-  })
-
+export const getProductInventoryChange = (data: any) => http({url: '/productInventoryChange', method: 'GET', data})
 // sales
-export const addSalesOrder = (data: addSalesOrderType) => http({
-    url: '/addSalesOrder',
-    method: 'POST',
-    data
-  })
+export const addSalesOrder = (data: addSalesOrderType) => http({url: '/addSalesOrder', method: 'POST', data})
 
-export const deleteSalesOrder = (data: any) => http({
-    url: '/salesOrder',
-    method: 'DELETE',
-    data
-  })
+export const deleteSalesOrder = (data: any) => http({url: '/salesOrder', method: 'DELETE', data})
 
-export const getAllSalesOrders = (data: any) => http({
-    url: '/allSalesOrders',
-    method: 'GET',
-    data
-  })
+export const getAllSalesOrders = (data: any) => http({url: '/allSalesOrders', method: 'GET', data})
 
-export const getTotalSales = (data: any) => http({
-    url: '/totalSales',
-    method: 'GET',
-    data
-  })
+export const getTotalSales = (data: any) => http({url: '/totalSales', method: 'GET', data})
 
-export const getSalesReport = (data: any) => http({
-    url: '/salesReport',
-    method: 'GET',
-    data
-  })
-
+export const getSalesReport = (data: any) => http({url: '/salesReport', method: 'GET', data})
 // user
-export const getUserInfo = (data: any) => http({
-    url: '/userInfo',
-    method: 'GET',
-    data
-  })
+export const getUserInfo = (data: any) => http({url: '/userInfo', method: 'GET', data})
 
-export const updateUserInfo = (data: any) => http({
-    url: '/userInfo',
-    method: 'PUT',
-    data
-  })
+export const updateUserInfo = (data: any) => http({url: '/userInfo', method: 'PUT', data})
 
-export const getUserGroups = () => http({
-    url: '/userGroups',
-    method: 'GET'
-  })
-
+export const getUserGroups = () => http({url: '/userGroups', method: 'GET'})
 // chat
-export const sendMsg = (data: any) => http({
-    url: '/sendMsg',
-    method: 'POST',
-    data
-  })
+// export const sendMsg = (data: any) => http({url: '/sendMsg', method: 'POST', data})
 
-export const getChatHistory = (data: any) => http({
-    url: '/chatHistory',
-    method: 'GET',
-    data
-  })
-
+// export const getChatHistory = (data: any) => http({url: '/chatHistory', method: 'GET', data})
 // userRoleChange
-export const getUserRoleChangeRecords = (data: any) => http({
-    url: '/userRoleChangeRecords',
-    method: 'GET',
-    data
-  })
-
+export const getUserRoleChangeRecords = (data: any) => http({url: '/userRoleChangeRecords', method: 'GET', data})

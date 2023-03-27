@@ -108,12 +108,14 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { PURCHASE_ORDER_STATUS } from '@/constants/constants.ts'
-import authMixin from '@/mixins/authMixin'
+import { PURCHASE_ORDER_STATUS } from '@/constants/constants'
+// import authMixin from '@/mixins/authMixin''
+import isOperator from '@/hook/isOperator'
+import isPermissions from '@/hook/isPermissions'
 
 export default defineComponent({
   name: 'OrderDetail',
-  mixins: [authMixin],
+  // mixins: [authMixin],
   setup () {
     const detailData = ref([])
     const purchaseStatus = ref(null)
@@ -128,9 +130,9 @@ export default defineComponent({
       if (this.nextActionName === '未开始') {
         return true
       } else if (this.nextActionName === '采购完成') {
-        return this.hasAuth('PURCHASE_ALL') || this.isOperator(this.detailData.purchaserAccount.value)
+        return isPermissions('PURCHASE_ALL') || isOperator(this.detailData.purchaserAccount.value)
       } else if (this.nextActionName === '入库完成') {
-        return this.hasAuth('STORAGE')
+        return isPermissions('STORAGE')
       } else if (this.nextActionName === '订单已完成') {
         return false
       }

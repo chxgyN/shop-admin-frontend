@@ -11,8 +11,13 @@
 import { defineComponent } from 'vue'
 import Layout from '@/components/common/layout/index.vue'
 
+
 export default defineComponent({
   name: 'App',
+  setup(){
+      
+  },
+
   components: {
     Layout
   }

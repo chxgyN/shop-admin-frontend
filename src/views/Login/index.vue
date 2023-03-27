@@ -5,7 +5,7 @@
     >
       <template #header>
         <div style="text-align: center;">
-          超市进销存管理系统
+          零食量贩店进销存系统
         </div>
       </template>
       <div
@@ -61,8 +61,9 @@
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
 import { loginForm, loginFormRules } from './loginFormModel'
-import { saveUserToLocal } from '@/utils'
+import { saveUserToLocal,userToVuex } from '@/utils'
 import CryptoJS from 'crypto-js'
+import initDynamicRoutes from '@/hook/initDynamicRoutes'
 
 export default defineComponent({
   name: 'Login',
@@ -82,22 +83,31 @@ export default defineComponent({
             account: this.loginForm.account,
             password: CryptoJS.MD5(this.loginForm.password).toString()
           })
-          // console.log(res);
+          console.log(res);
           
           if (res.code === 0) {
             const user = {
               account: this.loginForm.account,
               password: this.loginForm.password,
               username: res.data.username,
-              avatar: res.data.avatar,
-              role: res.data.role
+              // avatar: res.data.avatar,
+              role: res.data.role,
+              token:res.data.token
             }
+            
             if (this.loginForm.rememberUser) {
               // 记住用户
               saveUserToLocal(user)
             }
-            this.$store.commit('setUser', user)
+            else{
+              userToVuex(user)
+            }
+            
+            // console.log("@"+user.password);
+            // console.log("@@"+this.$store.state.user.password);
             this.$refs.LoginForm.resetFields()
+            initDynamicRoutes()
+          
             // 跳转首页
             setTimeout(() => {
               this.$router.push({ path: '/' })

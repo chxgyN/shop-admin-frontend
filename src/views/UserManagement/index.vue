@@ -18,7 +18,7 @@
       </el-menu-item>
     </el-menu>
     <!-- 管理用户信息 -->
-    <PersonalCenter
+    <EditPersonalCenter
       v-if="typeShow === 'edit'"
       :editing-users="true"
     />
@@ -127,13 +127,13 @@ import { defineComponent, ref } from 'vue'
 import { registerFormRules, registerForm } from '@/views/UserManagement/registerFormModel'
 import CryptoJS from 'crypto-js'
 import { ROLE_LIST } from '@/constants/constants'
-import PersonalCenter from '@/views/PersonalCenter/index.vue'
+import EditPersonalCenter from "@/views/EditPersonalCenter/index.vue"
 import tableColumns from './tableColumns'
 
 export default defineComponent({
   name: 'UserManagement',
   components: {
-    PersonalCenter
+    EditPersonalCenter
   },
   setup () {
     const registerFormRef = ref(registerForm)

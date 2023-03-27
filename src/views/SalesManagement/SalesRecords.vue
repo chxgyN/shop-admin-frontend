@@ -3,7 +3,7 @@
     <div class="actions-container">
       <el-button
         size="small"
-        :disabled="!hasAuth(['SELL_SELF'])"
+        :disabled="!isPermissions('SELL_SELF')"
         @click="showAddingDrawer"
       >
         添加销售记录
@@ -42,7 +42,7 @@
               <el-button
                 size="small"
                 type="danger"
-                :disabled="!(hasAuth(['SELL_ALL']) || isOperator(scope.row.sellerAccount))"
+                :disabled="!(isPermissions('SELL_SELF') || isOperator(scope.row.sellerAccount))"
               >
                 删除
               </el-button>
@@ -168,11 +168,13 @@
 import { defineComponent, ref } from 'vue'
 import tableColumns from './tableColumns'
 import purchaseAndSalesMixin from '@/mixins/purchaseAndSalesMixin'
-import authMixin from '@/mixins/authMixin'
+import isPermissions from '@/hook/isPermissions'
+import { is } from '@babel/types'
+import isOperator from '@/hook/isOperator'
 
 export default defineComponent({
   name: 'SalesRecords',
-  mixins: [purchaseAndSalesMixin, authMixin],
+  mixins: [purchaseAndSalesMixin],
   setup () {
     const orders = ref([])
     const ordersData = ref([])
@@ -224,6 +226,7 @@ export default defineComponent({
     //   pageIdx: 1,
     //   pageSize: 10
     // }
+    // const disabled = !isPermissions('SELL_SELF')
     return {
       tableColumns,
       orders,
@@ -233,8 +236,11 @@ export default defineComponent({
       allProductsOptions,
       productNameRule,
       salesVolumeRule,
-      loading
-      // pagination
+      loading,
+      // pagination,
+      // disabled,
+      isOperator,
+      isPermissions
     }
   },
   methods: {

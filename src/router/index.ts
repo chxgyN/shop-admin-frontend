@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { getUserFromLocal } from '@/utils'
 import Store from '@/store'
 import { socket } from '@/main'
+import initDynamicRoutes from '@/hook/initDynamicRoutes'
 
 // 路由记录就是一个包含路由规则和组件信息的对象。在创建动态路由时，
 // 我们可以使用具有相同格式的多个 RouteRecordRaw 对象来描述路由记录，
@@ -75,11 +76,6 @@ const routes: Array<RouteRecordRaw> = [
     },
     component: () => import('@/views/PersonalCenter/index.vue')
   },
-  {
-    path: '/userManagement',
-    name: 'userManagement',
-    component: () => import('@/views/UserManagement/index.vue')
-  }
 ]
 
 const router = createRouter({
@@ -87,27 +83,47 @@ const router = createRouter({
   routes
 })
 
-// 路由守卫
-router.beforeEach(async (to, from, next) => {
+// 前置路由守卫
+router.beforeEach(async (to, from, next ) => {
   if (to.name === 'login') {
     next()
-  } else {
-    if (!Store.state.user.account) {
+  } 
+  else {   
+    // ' '转化为true ""转化为false
+    if (Store.state.user.token === "") {
       await getUserFromLocal()
-      if (Store.state.user.account) {
-        // 用户登录后发送用户信息
+
+      // vuex检查后，local中还是没有获取到跳转login，获取到了存放到vuex中跳转发送用户信息
+      if (Store.state.user.token === "") {
+        next({ path: '/login' })
+      } 
+      else {
+        // 用户登录后发送用户信息 ??
         if (!Store.state.socketConnected) {
           socket.emit('userLogin', Store.state.user.account)
           Store.state.socketConnected = true
         }
-        next()
-      } else {
-        next({ path: '/login' })
-      }
-    } else {
+        // 地址跳转先于添加路由方法执行完毕
+        console.log({...to});
+        
+        initDynamicRoutes()  
+        // router.push({...to, replace:true})
+        next({ ...to, replace: true }) // 这里相当于push到一个页面 不在进入路由拦截
+      } 
+    } 
+    else {
       next()
     }
   }
 })
+
+// export function initDynamicRoutes() {
+//   const role = Store.state.user.role
+//   // console.log(router.getRoutes())
+//   if(ROLE_LIST[role].auth.includes('USER_MANAGEMENT')){
+//     router.addRoute(userMana)
+//     // console.log(router.getRoutes())
+//   }
+// }
 
 export default router

@@ -59,7 +59,7 @@
       >
         <el-button
           size="small"
-          :disabled="!hasAuth('EDIT_PRODUCT')"
+          :disabled="!isPermissions('EDIT_PRODUCT')"
           @click="showAddProductDrawer = true"
         >
           添加商品
@@ -75,7 +75,7 @@
             <el-button
               size="small"
               type="danger"
-              :disabled="!hasAuth('EDIT_PRODUCT')"
+              :disabled="!isPermissions('EDIT_PRODUCT')"
             >
               批量删除
             </el-button>
@@ -321,7 +321,7 @@ import { addProductForm, addProductFormRules } from './addProductFormModel'
 import { editProductForm, editProductFormRules } from './editProductFormModel'
 import { PRODUCT_STATUS } from '@/constants/constants'
 import { cloneDeep } from 'lodash'
-import authMixin from '@/mixins/authMixin'
+import isPermissions from '@/hook/isPermissions'
 
 export default defineComponent({
   name: 'InventoryManagement',
@@ -329,7 +329,6 @@ export default defineComponent({
     CardsDisplay,
     TableDisplay
   },
-  mixins: [authMixin],
   setup () {
     const currentTab = ref<'cards' | 'table'>('cards')
     const showAddProductDrawer = ref<boolean>(false)
@@ -340,6 +339,7 @@ export default defineComponent({
     const editingProductId = ref<string | null>(null)
     const productStatusFilter = ref<string>('')
     const searchText = ref<string>('')
+    // const isEdit = !isPermissions('EDIT_PRODUCT')
     return {
       currentTab,
       showAddProductDrawer,
@@ -352,7 +352,9 @@ export default defineComponent({
       editingProductId,
       PRODUCT_STATUS,
       productStatusFilter,
-      searchText
+      searchText,
+      isPermissions
+      // isEdit
     }
   },
   computed: {

@@ -8,15 +8,16 @@ export default defineComponent({
     }
   },
   methods: {
-    hasAuth (actionAuth) {
+    //判断当前角色是否有传入字段权限
+    hasAuth (actionAuth:String) {
       if (!this.userRole) {
         return false
       }
-      if (Array.isArray(actionAuth)) {
-        return actionAuth.some(auth => {
-          return ROLE_LIST[this.userRole].auth.includes(auth)
-        })
-      }
+      // if (Array.isArray(actionAuth)) {
+      //   return actionAuth.some(auth => {
+      //     return ROLE_LIST[this.userRole].auth.includes(auth)
+      //   })
+      // }
       return ROLE_LIST[this.userRole].auth.includes(actionAuth)
     },
     isOperator (operatorAccount) {

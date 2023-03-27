@@ -59,7 +59,7 @@
               type="primary"
               icon="el-icon-edit"
               circle
-              :disabled="!hasAuth('EDIT_PRODUCT')"
+              :disabled="!isPermissions('EDIT_PRODUCT')"
               @click="$emit('editProduct')"
             />
             <el-popconfirm
@@ -73,7 +73,7 @@
                   type="danger"
                   icon="el-icon-delete"
                   circle
-                  :disabled="!hasAuth('EDIT_PRODUCT')"
+                  :disabled="!isPermissions('EDIT_PRODUCT')"
                 />
               </template>
             </el-popconfirm>
@@ -86,11 +86,10 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import authMixin from '@/mixins/authMixin'
+import isPermissions from '@/hook/isPermissions'
 
 export default defineComponent({
   name: 'ProductCard',
-  mixins: [authMixin],
   emits: ['editProduct'],
   props: {
     product: {
@@ -104,9 +103,12 @@ export default defineComponent({
   },
   setup () {
     const actionsShow = ref<boolean>(false)
+    // const disabled = !isPermissions('EDIT_PRODUCT')
     return {
       actionsShow,
-      defaultImgUrl: require('@/assets/imgs/product.png')
+      defaultImgUrl: require('@/assets/imgs/product.png'),
+      isPermissions
+      // disabled
     }
   },
   computed: {

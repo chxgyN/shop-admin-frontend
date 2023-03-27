@@ -15,7 +15,7 @@ export interface registerFormType {
 export interface userInfoType {
   account: string,
   password: string,
-  avatar: string,
+  // avatar: string,
   username: string,
   role: string
 }

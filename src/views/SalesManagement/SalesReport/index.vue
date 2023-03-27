@@ -1,13 +1,13 @@
 <template>
   <div>
     <el-menu
-      default-active="week"
+      default-active="month"
       mode="horizontal"
       @select="handleSelect"
     >
-      <el-menu-item index="week">
+      <!-- <el-menu-item index="week">
         周
-      </el-menu-item>
+      </el-menu-item> -->
       <el-menu-item index="month">
         月
       </el-menu-item>
@@ -43,7 +43,7 @@ export default defineComponent({
   name: 'SalesReport',
   setup () {
     const loading = ref<boolean>(false)
-    const type = ref<'week' | 'month' | 'year'>('week')
+    const type = ref< 'month' | 'year'>('month')
     const salesReportData = ref([])
     const handleSelect = (selectedType) => {
       type.value = selectedType
@@ -59,10 +59,10 @@ export default defineComponent({
   watch: {
     type: {
       async handler (type) {
-        const res = await this.$api.getSalesReport({
-          type
-        })
+        const res = await this.$api.getSalesReport({type})
         this.salesReportData = res.data
+        console.log(res.data);
+        
       },
       immediate: true
     }

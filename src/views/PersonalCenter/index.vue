@@ -4,130 +4,11 @@
     class="personal-center-container"
     style="display: flex;justify-content: space-around;"
   >
-    <!-- 聊天用户选择 -->
-    <el-scrollbar
-      height="70vh"
-      style="width: 20%;"
-    >
-      <el-collapse
-        v-model="activeGroups"
-        style="border-bottom: none;padding-right: 10px;"
-      >
-        <el-collapse-item
-          v-for="userGroup in userGroups"
-          :key="userGroup._id"
-          :title="userGroup._id"
-          :name="userGroup._id"
-        >
-          <div
-            v-for="user in userGroup.users"
-            :key="user.account"
-            class="user-group__item"
-            :class="{'user-group__item--active': selectingUserAccount === user.account}"
-            @click="selectUser(user)"
-          >
-            <div style="display: flex;align-items: center;">
-              <UserAvatar
-                :size="10"
-                :avatar="user.avatar"
-                style="margin-right: 5px;"
-              />
-              <span>{{ user.username }}</span>
-            </div>
-            <span
-              v-if="isSelf(user.account)"
-              style="color: #999;font-size: 12px;margin-right: 6px;"
-            >
-              本人
-            </span>
-          </div>
-        </el-collapse-item>
-      </el-collapse>
-    </el-scrollbar>
     <el-card
       shadow="hover"
       style="width: 60%;"
     >
-      <!-- 聊天界面 -->
-      <div v-if="chatPartner">
-        <div
-          class="chatting-title"
-          style="display: flex;align-items: center;margin-bottom: 20px;"
-        >
-          <SvgIcon
-            name="left-arrow"
-            :size="20"
-            color="black"
-            :hover-change-color="false"
-            style="cursor: pointer;"
-            @click="chatPartner = null"
-          />
-          <span style="margin-left: 8px;font-size: 18px;">{{ chatPartner.username }}</span>
-        </div>
-        <!-- 聊天内容 -->
-        <el-scrollbar
-          ref="chatContentWapper"
-          height="50vh"
-        >
-          <div
-            class="chatting-content-wrapper"
-            style="font-size: 14px;padding: 20px;box-sizing: border-box;min-height: 50vh;"
-            :style="{backgroundColor: chatPartner && '#f5f5f5'}"
-          >
-            <div
-              v-if="!chatContents.length"
-              class="chatting-content__tip-words"
-            >
-              暂无聊天记录
-            </div>
-            <div
-              v-for="(content, idx) in chatContents"
-              :key="content._id"
-              class="chatting-content-wrapper__content"
-              style="overflow: hidden;margin: 10px 0;text-align: center;"
-            >
-              <div v-if="idx === 0 || !isTimeClear(content.time, chatContents[idx - 1]?.time)">
-                <span style="background-color: #dadada;color: white;padding: 3px;font-size: 10px;margin: 5px 0;border-radius: 2px;">
-                  {{ chatTime(content.time) }}
-                </span>
-              </div>
-              <UserAvatar
-                :avatar="content.user.avatar"
-                :style="{float: isSelf(content.senderAccount) ? 'right' : 'left',
-                         marginRight: !isSelf(content.senderAccount) && '6px', marginLeft: isSelf(content.senderAccount) && '6px'}"
-              />
-              <div
-                style="padding: 6px;max-width: 50%;border-radius: 4px;letter-spacing: 1px;min-height: 18px;"
-                :style="{float: isSelf(content.senderAccount) ? 'right' : 'left',
-                         backgroundColor: isSelf(content.senderAccount) ? '#98e165' : '#fff'}"
-              >
-                {{ content.content }}
-              </div>
-            </div>
-          </div>
-        </el-scrollbar>
-
-        <!-- 聊天输入框 -->
-        <div class="chatting-input-wrapper">
-          <el-input
-            v-model="chattingContent"
-            type="textarea"
-            :rows="4"
-            placeholder="请输入内容"
-            @keyup.enter="sendMsg"
-          />
-          <el-button
-            size="mini"
-            style="margin: 10px 0;float: right"
-            @click="sendMsg"
-          >
-            发送
-          </el-button>
-        </div>
-      </div>
-      <!-- 用户信息 -->
-      <div
-        v-else
+      <div 
         class="user-info-wrapper"
         style="display: flex;align-items: center;flex-direction: column;min-width: 400px;"
       >
@@ -136,17 +17,20 @@
           style="height: 170px;"
         >
           <UserAvatar
+            :size="120"
+          />
+          <!-- <UserAvatar
             :size="80"
             :avatar="userInfo.avatar"
-          />
-          <el-upload
+          /> -->
+          <!-- <el-upload
             action="#"
             :before-upload="beforeProductImageUpload"
           >
             <el-button size="small">
               上传头像
             </el-button>
-          </el-upload>
+          </el-upload> -->
         </div>
         <el-divider
           style="margin: 20px 0;"
@@ -175,6 +59,7 @@
               @click="editOrSaveUsername"
             />
           </div>
+          <!-- 职位是否可选择 -->
           <div>
             <span>职位：</span>
             <el-select
@@ -197,9 +82,9 @@
           </div>
           <div>入职时间：{{ userInfo.entryTime }}</div>
         </div>
-      </div>
+      </div> 
     </el-card>
-  </div>
+  </div> 
 </template>
 
 <script lang="ts">
@@ -259,33 +144,11 @@ export default defineComponent({
     this.selectingUserAccount = this.userAccount
     await this.getUserInfo()
     await this.getUserGroups()
-    this.$socket.on('newMsg', async () => {
-      await this.getChatHistory()
-    })
     this.$socket.on('someUserUpdate', async () => {
       await this.getUserGroups()
     })
   },
   methods: {
-    chatTime (time: number) {
-      if (dayjs().isSame(dayjs(time), 'day')) {
-        return dayjs(time).format('HH:mm')
-      } else if (dayjs().add(1, 'day').isSame(dayjs(time), 'day')) {
-        return '昨天' + dayjs(time).format('HH:mm')
-      } else if (dayjs().isSame(dayjs(time), 'year')) {
-        return dayjs(time).format('MM月DD日 HH:mm')
-      }
-      return dayjs(time).format('YYYY年MM月DD日 HH:mm')
-    },
-    isTimeClear (startTime: number, endTime: string) {
-      if (!endTime) {
-        return false
-      }
-      if (dayjs(startTime).from(dayjs(endTime)) !== 'in a few seconds') {
-        return false
-      }
-      return true
-    },
     async selectUser (user) {
       this.selectingUserAccount = user.account
       if (this.editingUsers) {
@@ -298,37 +161,6 @@ export default defineComponent({
           this.selectChatPartner(user)
         }
       }
-    },
-    scrollToNewestMsg () { // 滚动条滚动到最底部
-      this.$nextTick(() => {
-        this.$refs.chatContentWapper.wrap.scrollTop = this.$refs.chatContentWapper.wrap.scrollHeight
-      })
-    },
-    async selectChatPartner (user) {
-      if (!this.isSelf(user.account)) {
-        this.chatPartner = user
-        await this.getChatHistory()
-        this.scrollToNewestMsg()
-      }
-    },
-    async getChatHistory () {
-      const res = await this.$api.getChatHistory({
-        senderAccount: this.userAccount,
-        recipientAccount: this.chatPartner.account
-      })
-      this.chatContents = res.data
-    },
-    async sendMsg () {
-      await this.$api.sendMsg({
-        senderAccount: this.userAccount,
-        recipientAccount: this.chatPartner.account,
-        content: this.chattingContent,
-        time: Date.now()
-      })
-      this.$socket.emit('sendMsg', this.chatPartner.account)
-      await this.getChatHistory()
-      this.scrollToNewestMsg()
-      this.chattingContent = ''
     },
     isSelf (userAccount) {
       return userAccount === this.userAccount
@@ -362,22 +194,24 @@ export default defineComponent({
       this.loading = true
       const res = await this.$api.getUserInfo({ account: this.showingUserAccount })
       this.userInfo = res.data
+      console.log("@@"+res.data);
+      
       if (this.showingUserAccount === this.userAccount) {
         this.$store.commit('setUser', res.data)
       }
       this.loading = false
     },
-    beforeProductImageUpload (file: any) {
-      // 将上传的图片转为base64格式
-      const reader = new FileReader()
-      reader.onload = async (e) => {
-        this.userInfo.avatar = e.target.result
-        await this.updateUserInfo()
-        await this.getUserInfo()
-      }
-      reader.readAsDataURL(file)
-      return false // 屏蔽默认上传
-    },
+    // beforeProductImageUpload (file: any) {
+    //   // 将上传的图片转为base64格式
+    //   const reader = new FileReader()
+    //   reader.onload = async (e) => {
+    //     this.userInfo.avatar = e.target.result
+    //     await this.updateUserInfo()
+    //     await this.getUserInfo()
+    //   }
+    //   reader.readAsDataURL(file)
+    //   return false // 屏蔽默认上传
+    // },
     async updateUserInfo () {
       await this.$api.updateUserInfo({
         ...this.userInfo,

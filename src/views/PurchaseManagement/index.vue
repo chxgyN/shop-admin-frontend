@@ -3,7 +3,7 @@
     <div class="actions-container">
       <el-button
         size="small"
-        :disabled="!hasAuth(['PURCHASE_SELF'])"
+        :disabled="!isPermissions('PURCHASE_SELF')"
         @click="showAddingDrawer"
       >
         添加采购订单
@@ -65,8 +65,8 @@
               <el-button
                 size="small"
                 type="danger"
-                :disabled="!(hasAuth(['PURCHASE_ALL']) || isOperator(scope.row.purchaserAccount))"
-              >
+                :disabled="!(isPermissions('PURCHASE_SELF') || isOperator(scope.row.purchaserAccount))"
+              >   
                 删除
               </el-button>
             </template>
@@ -234,11 +234,13 @@ import { defineComponent, ref } from 'vue'
 import tableColumns from './tableColumns'
 import { PURCHASE_ORDER_STATUS, INVENTORY_LOCATION_OPTIONS } from '@/constants/constants'
 import purchaseAndSalesMixin from '@/mixins/purchaseAndSalesMixin'
-import authMixin from '@/mixins/authMixin'
+import isPermissions from '@/hook/isPermissions'
+import isOperator from '@/hook/isOperator'
+
 
 export default defineComponent({
   name: 'PurchaseManagement',
-  mixins: [purchaseAndSalesMixin, authMixin],
+  mixins: [purchaseAndSalesMixin],
   setup () {
     const ordersData = ref([])
     const showDrawer = ref<boolean>(false)
@@ -292,6 +294,7 @@ export default defineComponent({
       pageIdx: 1,
       pageSize: 8
     })
+    // const disabled = !isPermissions('PURCHASE_SELF')
     return {
       tableColumns,
       ordersData,
@@ -303,7 +306,10 @@ export default defineComponent({
       loading,
       PURCHASE_ORDER_STATUS,
       INVENTORY_LOCATION_OPTIONS,
-      pagination
+      pagination,
+      // disabled,
+      isPermissions,
+      isOperator
     }
   },
   watch: {

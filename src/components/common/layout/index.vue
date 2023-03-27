@@ -1,7 +1,7 @@
 <template>
   <el-container style="height: 100vh;width: 100vw;">
     <el-header style="height: unset;border-bottom: 1px solid #ddd;">
-      <Header />
+      <Header/>
     </el-header>
     <el-container style="height: 100%;">
       <el-aside
@@ -9,10 +9,10 @@
         width="220px"
         style="background-color: #fff;border-right: 1px solid #ddd;"
       >
-        <Aside />
+        <Aside/>
       </el-aside>
       <el-main style="height: calc(100vh - 71px);overflow: auto;">
-        <router-view />
+        <router-view/>
       </el-main>
     </el-container>
   </el-container>
@@ -34,7 +34,7 @@ export default defineComponent({
       type: Boolean,
       default: true
     }
-  }
+  },
 })
 </script>
 
