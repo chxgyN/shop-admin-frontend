@@ -1,27 +1,28 @@
 <template>
   <div>
+    <!-- 内容 -->
     <div
-      v-if="products.length || loading"
-      v-loading="loading"
+      v-if="products.length"
       class="cards-display-container"
     >
       <ProductCard
         v-for="product in products"
         :key="product.productName"
         :product="product"
-        @getProducts="getProducts"
+        @getProducts="loadProducts"
         @editProduct="$emit('editProduct', product)"
       />
     </div>
+    <!-- 翻页 -->
     <el-pagination
-      v-if="products.length || loading"
+      v-if="products.length"
       style="margin-top: 20px;"
       background
       layout="prev, pager, next"
-      :page-size="pagination.pageSize"
-      :total="pagination.total"
-      :current-page="pagination.pageIdx"
-      @current-change="getProducts($event)"
+      :page-size="pageSize"
+      :total="total"
+      :current-page="pageIdx"
+      @current-change="handlePageChange($event)"
     />
     <el-empty
       v-else
@@ -31,29 +32,56 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch, Ref} from 'vue'
 import ProductCard from './ProductCard.vue'
-import productsDisplayMixin from '@/mixins/productsDisplayMixin'
+import getProducts from '@/hook/getProducts'
+// import { getProdectResType } from '@/api/types/product'
 
 export default defineComponent({
   name: 'CardsDisplay',
+  props: {
+    allFilters: {
+      type: Object,
+      default: () => {}
+    }
+  },
   components: {
     ProductCard
   },
   emits: ['editProduct'],
-  mixins: [productsDisplayMixin],
-  setup () {
-    const products = ref([])
-    const loading = ref<boolean>(false)
-    const pagination = {
-      total: 0,
-      pageIdx: 1,
-      pageSize: 6
+  setup (props) {
+    const total = ref(0)
+    const products: any = ref([])
+    const pageIdx = ref(1)
+    const pageSize = ref(6)
+
+    async function loadProducts() {
+      const result = await getProducts()
+      products.value = result.products
+      total.value = result.total
+      pageIdx.value = result.pageIdx
+      pageSize.value = result.pageSize
     }
+
+    async function handlePageChange(newPageIdx) {
+      const result = await getProducts(newPageIdx)
+      products.value = result.products
+      total.value = result.total
+      pageIdx.value = result.pageIdx
+      pageSize.value = result.pageSize
+    }
+
+    loadProducts()
+
     return {
+      allFilters: props.allFilters,
       products,
-      loading,
-      pagination
+      total,
+      pageIdx,
+      pageSize,
+      getProducts,
+      loadProducts,
+      handlePageChange
     }
   }
 })

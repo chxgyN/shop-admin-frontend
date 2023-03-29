@@ -3,12 +3,6 @@
     class="product-rank-container"
     style="text-align: center;margin-bottom: 40px;overflow: hidden;"
   >
-    <!-- <h3
-      v-if="showTitle"
-      class="product-rank__title"
-    >
-      {{ title }}
-    </h3> -->
     <div
       class="rank-list-container"
       style="display: flex;align-items: flex-end;justify-content: center;margin-top: 30px;"
@@ -80,18 +74,10 @@ import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   props: {
-    // title: {
-    //   type: String,
-    //   required: true
-    // },
     list: {
       type: Array,
       default: () => []
     },
-    showTitle: {
-      type: Boolean,
-      default: false
-    }
   },
   setup () {
     const showMoreList = ref(false)

@@ -85,6 +85,7 @@
       :current-page="pagination.pageIdx"
       @current-change="getProducts($event)"
     />
+    <div></div>
   </div>
 </template>
 
@@ -93,7 +94,6 @@ import { defineComponent, ref } from 'vue'
 import columns from './tableColumns'
 import productsDisplayMixin from '@/mixins/productsDisplayMixin'
 import isPermissions from '@/hook/isPermissions'
-
 export default defineComponent({
   name: 'TableDisplay',
   mixins: [productsDisplayMixin],

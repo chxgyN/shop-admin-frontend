@@ -2,7 +2,7 @@ import { responseDataType, requestDataType } from '../types/request'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import store from '@/store/index'
-import authMixin from '@/mixins/authMixin'
+// import authMixin from '@/mixins/authMixin'
 
 axios.defaults.timeout = 20000
 axios.defaults.headers['Content-Type'] = 'application/json;charset=UTF-8'

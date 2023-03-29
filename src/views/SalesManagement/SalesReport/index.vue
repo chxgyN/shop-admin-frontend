@@ -59,6 +59,8 @@ export default defineComponent({
   watch: {
     type: {
       async handler (type) {
+        console.log({type});
+  
         const res = await this.$api.getSalesReport({type})
         this.salesReportData = res.data
         console.log(res.data);

@@ -19,3 +19,16 @@ export interface editProductType {
 export interface getProductType {
   _id: string
 }
+
+export interface getProdectResType {
+  image: string
+  _id: string
+  status:string
+  productName: string
+  price:number
+  purchasePrice:number
+  unit:string
+  inventory:number
+  inventoryCeiling:number
+  __v:number
+}

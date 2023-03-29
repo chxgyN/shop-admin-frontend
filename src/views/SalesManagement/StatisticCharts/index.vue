@@ -40,6 +40,7 @@ import { defineComponent, ref } from 'vue'
 import monthSalesChartOption from './chartOptions/monthSalesChartOption'
 import yearSalesChartOption from './chartOptions/yearSalesChartOption'
 import * as echarts from 'echarts'
+// import {LineChart, LineSeriesOption} from 'echarts/charts';
 
 export default defineComponent({
   name: 'StatisticCharts',

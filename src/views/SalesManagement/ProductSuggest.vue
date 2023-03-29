@@ -21,17 +21,14 @@
     <ProductRank
       v-if="typeShow === 'salesVolumn'"
       :list="salesVolumnRankList" 
-   
     />
     <ProductRank
       v-if="typeShow === 'totalAmount'"
       :list="totalAmountRankList" 
-
     />
     <ProductRank
       v-if="typeShow === 'totalProfit'"
-      :list="totalProfitRankList" 
-
+      :list="totalProfitRankList"
     />
   </div>
 </template>
@@ -49,16 +46,20 @@ export default defineComponent({
     // const props = defineProps(['title'])
     const loading = ref(false)
     const list = ref([])
+    const type = ref< 'month' | 'year'>('month')
     const typeShow = ref('salesVolumn')
     return {
       loading,
       list,
-      typeShow
+      typeShow,
+      type
     }
   },
   computed: {
     salesVolumnRankList () {
+      //copy array
       const list = this.list.slice()
+      // 降序
       list.sort((a, b) => (b.num - a.num))
       return list
     },
@@ -76,8 +77,22 @@ export default defineComponent({
   async created () {
     this.loading = true
     const res = await this.$api.productSuggest()
-    this.list = res.data
+    const resProfit = await this.$api.getSalesReport({type: 'month'})
+    const data = res.data
+    const prof = resProfit.data
+    //添加利润信息
+    for(let i = 0; i < data.length; i++){
+      for(let j = 0; j < prof.length; j++){
+        if(data[i]._id == prof[j]._id) {
+          data[i].profit = prof[j].profit
+          break
+        }
+      }
+    }
+    this.list = data
     this.loading = false
+
+    
   }
 })
 </script>
