@@ -37,7 +37,6 @@
       >
       <!-- 这里相当于父组件的内容,往子组件插 -->
         <template #title>
-          <!-- {{ $route.path }} -->
           {{ submenu.name }}
         </template>
         <el-menu-item
@@ -62,38 +61,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref ,reactive, computed} from 'vue'
-import { ASIDE_ITEMS } from '@/constants/constants'
-import authMixin from '@/mixins/authMixin'
+import { defineComponent, ref ,reactive, computed , watch} from 'vue'
+import { ASIDE_ITEMS, ROLE_LIST } from '@/constants/constants'
+// import authMixin from '@/mixins/authMixin'
 import { useStore } from 'vuex'
+
 
 export default defineComponent({
   name: 'Aside',
-  mixins: [authMixin],
+  // mixins: [authMixin],
   setup () {
     const asideItems = ref({})
     const as = reactive({})
     const store = useStore()
-    let role = computed(() => {
-      return store.state.user.role
-    })
-    
-    
-    return {
-      // 最好的情况，后端直接返回路由菜单，这里是经过处理的
-      // vuex维护login和aside共享数据
-      asideItems,
-      as,
-      role
-    }
-  },  
-
-  watch: {
-    // vuex里面的属性
-    role: {
-      handler () {
-        if (this.hasAuth('USER_MANAGEMENT')) {
-          this.asideItems = {
+    // let role = computed(() => {
+    //   return store.state.user.role
+    // })
+    watch(() => store.state.user.role, () => {
+      if (hasAuth('USER_MANAGEMENT')) {
+          asideItems.value = {
             ...ASIDE_ITEMS,
             用户管理: {
               name: '用户管理',
@@ -101,11 +87,44 @@ export default defineComponent({
             }
           }          
         } else {
-          this.asideItems = ASIDE_ITEMS
+          asideItems.value = ASIDE_ITEMS
         }
-      },
-      immediate: true
+    },{immediate:true})
+
+    function hasAuth (actionAuth: String) {
+      if (!store.state.user.role) {
+        return false
+      }
+      return ROLE_LIST[store.state.user.role].auth.includes(actionAuth)
     }
-  }
+
+    return {
+      // 最好的情况，后端直接返回路由菜单，这里是经过处理的
+      // vuex维护login和aside共享数据
+      asideItems,
+      as,
+      // role
+    }
+  },  
+
+  // watch: {
+    // vuex里面的属性
+    // role: {
+    //   handler () {
+    //     if (this.hasAuth('USER_MANAGEMENT')) {
+    //       this.asideItems = {
+    //         ...ASIDE_ITEMS,
+    //         用户管理: {
+    //           name: '用户管理',
+    //           index: '/UserManagement'
+    //         }
+    //       }          
+    //     } else {
+    //       this.asideItems = ASIDE_ITEMS
+    //     }
+    //   },
+    //   immediate: true
+    // }
+  // }
 })
 </script>

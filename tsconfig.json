@@ -38,8 +38,8 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "tests/**/*.ts"
-, "src/mixins/productsDisplayMixin.tsn.ts"  ],
+    "tests/**/*.ts",
+    "src/mixins/productsDisplayMixin.tsn.ts"  ],
   "exclude": [
     "node_modules"
   ]

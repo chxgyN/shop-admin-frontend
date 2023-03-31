@@ -194,7 +194,7 @@ export default defineComponent({
       this.loading = true
       const res = await this.$api.getUserInfo({ account: this.showingUserAccount })
       this.userInfo = res.data
-      console.log("@@"+res.data);
+      // console.log("@@"+res.data);
       
       if (this.showingUserAccount === this.userAccount) {
         this.$store.commit('setUser', res.data)

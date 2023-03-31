@@ -104,7 +104,7 @@ router.beforeEach(async (to, from, next ) => {
           Store.state.socketConnected = true
         }
         // 地址跳转先于添加路由方法执行完毕
-        console.log({...to});
+        // console.log({...to});
         
         initDynamicRoutes()  
         // router.push({...to, replace:true})

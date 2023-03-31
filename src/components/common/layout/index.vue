@@ -7,7 +7,7 @@
       <el-aside
         v-if="showAside"
         width="220px"
-        style="background-color: #fff;border-right: 1px solid #ddd;"
+        style="background-color: #fff; border-right: 1px solid #ddd;"
       >
         <Aside/>
       </el-aside>

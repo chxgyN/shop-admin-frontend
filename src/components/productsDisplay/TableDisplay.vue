@@ -92,13 +92,17 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import columns from './tableColumns'
-import productsDisplayMixin from '@/mixins/productsDisplayMixin'
+// import productsDisplayMixin from '@/mixins/productsDisplayMixin'
 import isPermissions from '@/hook/isPermissions'
+import { getAllProducts, getProduct } from '@/api/api'
+import { debounce } from 'lodash'
+import getProducts from '@/hook/getProducts'
+
 export default defineComponent({
   name: 'TableDisplay',
-  mixins: [productsDisplayMixin],
+  // mixins: [productsDisplayMixin],
   setup () {
-    const products = ref([])
+    const products :any = ref([])
     const selectedRows = ref([])
     const loading = ref<boolean>(false)
     const pagination = {
@@ -106,15 +110,26 @@ export default defineComponent({
       pageIdx: 1,
       pageSize: 6
     }
-    // const disabled = !isPermissions('EDIT_PRODUCT')
+    
+    const getProducts = debounce(async function (pageIdx = 1) {     
+      pagination.pageIdx = pageIdx
+      loading.value = true
+      const res :any= await getAllProducts(pagination)
+      loading.value = false
+      products.value = res.data
+      pagination.total = res.total
+    }, 200)
+
+    getProducts(pagination.pageIdx)
+
     return {
       columns,
       products,
       selectedRows,
       loading,
       pagination,
-      // disabled,
-      isPermissions
+      isPermissions,
+      getProducts
     }
   },
   methods: {

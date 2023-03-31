@@ -2,7 +2,7 @@ import { responseDataType, requestDataType } from '../types/request'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import store from '@/store/index'
-// import authMixin from '@/mixins/authMixin'
+
 
 axios.defaults.timeout = 20000
 axios.defaults.headers['Content-Type'] = 'application/json;charset=UTF-8'
@@ -15,11 +15,6 @@ axios.interceptors.request.use(
       // 如果本地存有token 设置权限请求头 请求权限数据
       config.headers['Authorization'] = 'Bearer' + store.state.user.token
     }
-    // if(config.method == 'put' && !authMixin.methods.hasAuth('EDIT_PRODUCT')){
-    //   console.log(!authMixin.methods.hasAuth('EDIT_PRODUCT'));
-      
-    //   alert("没有权限")
-    // }
     return config
   }, 
   error => {

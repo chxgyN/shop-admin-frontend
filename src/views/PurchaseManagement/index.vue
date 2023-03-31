@@ -9,36 +9,46 @@
         添加采购订单
       </el-button>
     </div>
-    <!-- 订单表 -->
+    <!-- 订单表 
+      ordersData -> 对象数组-->
     <el-table
       v-loading="loading"
       style="margin-top: 20px;"
       :data="ordersData"
       border
     >
+    <!-- scope数据哪里来的？ -->
       <el-table-column
         label="订单ID"
-        width="150"
+        width="130"
         fixed="left"
       >
+      <!-- scope.row里面的东西，和ordersData一样 
+          应该是先从el-table先传入 el-table-column内部，再从其中读取
+      -->
         <template #default="scope">
           <span
             class="order-table-item__orderId"
-            @click="$router.push({path: '/purchaseManagement/orderDetail/' + scope.row.orderId})"
+            @click="$router.push({
+              name: 'purchaseOrderDetail',
+              params:{
+                orderId: scope.row.orderId
+              } 
+            })"
           >
             {{ scope.row.orderId }}
           </span>
         </template>
       </el-table-column>
+      <!-- label代表列名  -->
+      <!-- 通过key来获取对应ordersData中的数据 -->
       <el-table-column
         v-for="column in tableColumns"
-        :key="column.key"
         :width="column.width"
-        :fixed="column.fixed"
         :label="column.label"
         :prop="column.key"
-        show-overflow-tooltip
-      />
+        show-overflow-tooltip>
+      </el-table-column>
       <el-table-column
         label="采购状态"
         width="100"
@@ -49,6 +59,7 @@
           </el-tag>
         </template>
       </el-table-column>
+      <!-- 使用了作用域插槽（slot）来自定义列中的内容 -->
       <el-table-column
         label="操作"
         width="100"
@@ -96,7 +107,7 @@
         ref="AddOrderForm"
         :model="addOrderForm"
         style="padding: 20px;"
-        label-position="left"
+        label-position = "left"
       >
         <el-form-item
           label="订单名"
@@ -230,17 +241,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import tableColumns from './tableColumns'
 import { PURCHASE_ORDER_STATUS, INVENTORY_LOCATION_OPTIONS } from '@/constants/constants'
-import purchaseAndSalesMixin from '@/mixins/purchaseAndSalesMixin'
 import isPermissions from '@/hook/isPermissions'
 import isOperator from '@/hook/isOperator'
+import { getAllPurchaseOrders } from '@/api/api'
 
 
 export default defineComponent({
   name: 'PurchaseManagement',
-  mixins: [purchaseAndSalesMixin],
   setup () {
     const ordersData = ref([])
     const showDrawer = ref<boolean>(false)
@@ -256,6 +266,7 @@ export default defineComponent({
         key: Date.now()
       }]
     })
+    const loading = ref<boolean>(false)
     const allProductsOptions = ref([])
     const productNameRule = {
       validator: (rule: any, value: any, cb: any) => {
@@ -288,13 +299,40 @@ export default defineComponent({
       },
       trigger: 'change'
     }
-    const loading = ref<boolean>(false)
-    const pagination = ref({
+    const pagination:any= ref({
       total: 0,
       pageIdx: 1,
       pageSize: 8
     })
-    // const disabled = !isPermissions('PURCHASE_SELF')
+//页数变化时，调用这个函数，更改页数信息，监视属性监视到变化，带着页数信息，请求进货信息
+    watch(pagination, async() => {
+        const res = await getOrders(pagination,ordersData)
+        pagination.value.total = res.pagination.value.total
+        ordersData.value = res.ordersData.value
+    },{immediate: true})
+
+    function pageChange(pageIdx) {
+      pagination.value.pageIdx = pageIdx
+    }
+
+    async function getOrders(pagination: any, ordersData: any) {
+      // this.loading = true
+      let res = null
+      res = await getAllPurchaseOrders({ ...pagination.value })
+      ordersData.value = res.data.reduce((res: Array<any>, cur: any) => {
+        res.push(cur.orders[0])
+        return res
+      }, [])
+      pagination.value.total = res.total
+      // this.loading = false  
+      return {
+        pagination,
+        ordersData
+      }
+    }
+    
+    getOrders(pagination,ordersData)
+
     return {
       tableColumns,
       ordersData,
@@ -307,35 +345,96 @@ export default defineComponent({
       PURCHASE_ORDER_STATUS,
       INVENTORY_LOCATION_OPTIONS,
       pagination,
-      // disabled,
       isPermissions,
-      isOperator
+      isOperator,
+      pageChange
     }
   },
-  watch: {
-    pagination: {
-      async handler () {
-        await this.getOrders()
-      },
-      deep: true,
-      immediate: true
-    }
-  },
+
+  
   methods: {
-    pageChange (pageIdx) {
-      this.pagination.pageIdx = pageIdx
+    async showAddingDrawer () {
+      this.showDrawer = true
+      await this.getAllProductNames()
     },
-    async getOrders () {
-      this.loading = true
-      let res = null
-      res = await this.$api.getAllPurchaseOrders({ ...this.pagination })
-      this.ordersData = res.data.reduce((res: Array<any>, cur: any) => {
-        res.push(cur.orders[0])
-        return res
-      }, [])
-      this.pagination.total = res.total
-      this.loading = false
+    async getAllProductNames () {
+      let filters = {}
+      // console.log(this);
+      
+      if (this.$options.name === 'SalesRecords') {
+        filters = {
+          inventory: true
+        }
+      }
+      const res = await this.$api.getAllProductNames(filters)
+      this.allProductsOptions = res.data.map((item: any) => ({
+        label: item.productName,
+        value: item.productName
+      }))
     },
+    async getProduct (item) {
+      const res = await this.$api.getProduct({ productName: escape(item.productName) })
+      item.inventory = res.data.inventory
+      item.inventoryCeiling = res.data.inventoryCeiling
+    },
+    handleAddOrder () {
+      this.$refs.AddOrderForm.validate(async (valid: boolean) => {
+        if (valid) {
+          let res = null
+          const time = Date.now()
+          if (this.$options.name === 'PurchaseManagement') {
+            res = await this.$api.addPurchaseOrder({
+              orderId: time,
+              name: this.addOrderForm.name,
+              inventoryLocation: this.addOrderForm.inventoryLocation,
+              remark: this.addOrderForm.remark,
+              items: this.addOrderForm.items,
+              purchaserAccount: this.$store.state.user.account,
+              createTime: time
+            })
+          } else if (this.$options.name === 'SalesRecords') {
+            res = await this.$api.addSalesOrder({
+              orderId: time,
+              remark: this.addOrderForm.remark,
+              items: this.addOrderForm.items,
+              sellerAccount: this.$store.state.user.account,
+              createTime: time
+            })
+          }
+          if (res.code === 0) {
+            this.$refs.AddOrderForm.resetFields()
+            this.showDrawer = false
+            await this.getOrders()
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    deleteRowItem (rowItem: any) {
+      const items = this.addOrderForm.items
+      const idx: number = items.findIndex(item => item.key === rowItem.key)
+      items.splice(idx, 1)
+    },
+    addRowItem () {
+      if (this.$options.name === 'PurchaseManagement') {
+        this.addOrderForm.items.push({
+          productName: '',
+          purchaseQuantity: 100,
+          inventory: 0,
+          inventoryCeiling: 0,
+          key: Date.now()
+        })
+      } else if (this.$options.name === 'SalesRecords') {
+        this.addOrderForm.items.push({
+          productName: '',
+          inventory: 0,
+          salesVolume: 100,
+          key: Date.now()
+        })
+      }
+    },
+ 
     async deletePurchaseOrder (row) {
       this.loading = true
       await this.$api.deletePurchaseOrder({
@@ -344,6 +443,7 @@ export default defineComponent({
       await this.getOrders()
       this.loading = false
     },
+
     async handlePurchaseStatusChange (row: any, e: any) {
       this.loading = true
       await this.$api.changePurchaseOrderStatus({

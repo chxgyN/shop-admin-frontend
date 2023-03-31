@@ -1,7 +1,8 @@
 export default [
   {
     key: 'name',
-    label: '订单名'
+    label: '订单名',
+    width: '130'
   },
   {
     key: 'purchaserName',
@@ -21,7 +22,7 @@ export default [
   {
     key: 'inventoryLocation',
     label: '存货地点',
-    width: '160'
+    width: '100'
   },
   {
     key: 'remark',

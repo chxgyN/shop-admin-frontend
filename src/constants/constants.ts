@@ -96,12 +96,4 @@ export const PURCHASE_ORDER_STATUS = {
     index: 4,
     tagType: 'success'
   }
-  // 未开始: {
-  //   label: '未开始',
-  //   value: '未开始'
-  // },
-  // 已完成: {
-  //   label: '已完成',
-  //   value: '已完成'
-  // }
 }
