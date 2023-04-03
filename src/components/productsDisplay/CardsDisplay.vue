@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch} from 'vue'
+import { defineComponent, ref} from 'vue'
 import ProductCard from './ProductCard.vue'
 import getProducts from '@/hook/getProducts'
 // import { getProdectResType } from '@/api/types/product'

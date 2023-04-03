@@ -93,9 +93,9 @@
 import { defineComponent, ref } from 'vue'
 import columns from './tableColumns'
 import isPermissions from '@/hook/isPermissions'
-import { getAllProducts, getProduct } from '@/api/api'
+import { getAllProducts} from '@/api/api'
 import { debounce } from 'lodash'
-import getProducts from '@/hook/getProducts'
+// import getProducts from '@/hook/getProducts'
 
 export default defineComponent({
   name: 'TableDisplay',

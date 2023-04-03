@@ -387,23 +387,20 @@ export default defineComponent({
       return false // 屏蔽默认上传
     },
 
-    handleEditProduct (row: any) {
+    handleEditProduct (row: any) {      
       this.showEditProductDrawer = true
-      this.editProductForm = cloneDeep(row)
+      this.editProductForm = cloneDeep(row)      
       this.editingProductId = row._id
     },
 
-    async editCommit() {
+    async editCommit() {      
       this.$refs.EditProductForm.validate(async (isValid: boolean) => {
         if (isValid) {
-          let res = null
-          res = await this.$api.editProduct({
+          let res = await this.$api.editProduct({
             ...this.editProductForm,
             _id: this.editingProductId
-          })
-          // console.log("@@@"+JSON.stringify(res));
-          
-          this.showAddProductDrawer = false
+          })          
+          this.showEditProductDrawer = false
           this.editingProductId = null
           this.refresh = !this.refresh
           this.$refs.EditProductForm.resetFields()
@@ -417,10 +414,8 @@ export default defineComponent({
 
     async addCommit () {
       this.$refs.AddProductForm.validate(async (isValid: boolean) => {
-        if (isValid) {
-          let res = null   
-          res = await this.$api.addProduct(this.addProductForm)
-          console.log(res.code);
+        if (isValid) {    
+          let res = await this.$api.addProduct(this.addProductForm)
           this.showAddProductDrawer = false
           this.editingProductId = null
           this.refresh = !this.refresh
