@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, Ref} from 'vue'
+import { defineComponent, ref, watch} from 'vue'
 import ProductCard from './ProductCard.vue'
 import getProducts from '@/hook/getProducts'
 // import { getProdectResType } from '@/api/types/product'
@@ -48,6 +48,14 @@ export default defineComponent({
   components: {
     ProductCard
   },
+  watch: {
+    allFilters: {
+      async handler () {
+        await this.loadProducts()
+      },
+      immediate: true
+    }
+  },
   emits: ['editProduct'],
   setup (props) {
     const total = ref(0)
@@ -55,8 +63,12 @@ export default defineComponent({
     const pageIdx = ref(1)
     const pageSize = ref(6)
 
+    // watch(props.allFilters, async() => {
+    //   await loadProducts()
+    // },{immediate: true})
+
     async function loadProducts() {
-      const result = await getProducts()
+      const result = await getProducts(props.allFilters)
       products.value = result.products
       total.value = result.total
       pageIdx.value = result.pageIdx
@@ -64,7 +76,7 @@ export default defineComponent({
     }
 
     async function handlePageChange(newPageIdx) {
-      const result = await getProducts(newPageIdx)
+      const result = await getProducts(props.allFilters, newPageIdx)
       products.value = result.products
       total.value = result.total
       pageIdx.value = result.pageIdx
@@ -74,7 +86,6 @@ export default defineComponent({
     loadProducts()
 
     return {
-      allFilters: props.allFilters,
       products,
       total,
       pageIdx,

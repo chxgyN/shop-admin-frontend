@@ -92,7 +92,6 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import columns from './tableColumns'
-// import productsDisplayMixin from '@/mixins/productsDisplayMixin'
 import isPermissions from '@/hook/isPermissions'
 import { getAllProducts, getProduct } from '@/api/api'
 import { debounce } from 'lodash'
@@ -100,8 +99,21 @@ import getProducts from '@/hook/getProducts'
 
 export default defineComponent({
   name: 'TableDisplay',
-  // mixins: [productsDisplayMixin],
-  setup () {
+  props: {
+    allFilters: {
+      type: Object,
+      default: () => {}
+    }
+  },
+  watch: {
+    allFilters: {
+      async handler () {
+        await this.getProducts()
+      },
+      immediate: true
+    }
+  },
+  setup (props) {
     const products :any = ref([])
     const selectedRows = ref([])
     const loading = ref<boolean>(false)
@@ -111,16 +123,25 @@ export default defineComponent({
       pageSize: 6
     }
     
-    const getProducts = debounce(async function (pageIdx = 1) {     
+    const getProducts = debounce(async function (pageIdx = 1) {  
+      const filters = Object.keys(props.allFilters).reduce((res: any, key: string) => {
+        if (key !== 'refresh' && props.allFilters[key]) {
+          res[key] = props.allFilters[key]
+        }
+        return res
+      }, {})   
       pagination.pageIdx = pageIdx
       loading.value = true
-      const res :any= await getAllProducts(pagination)
+      const res :any= await getAllProducts({
+        ...filters,
+        ...pagination
+      })
       loading.value = false
       products.value = res.data
       pagination.total = res.total
-    }, 200)
+    }, 1000)
 
-    getProducts(pagination.pageIdx)
+    getProducts()
 
     return {
       columns,

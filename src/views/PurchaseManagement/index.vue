@@ -252,7 +252,7 @@ import { getAllPurchaseOrders } from '@/api/api'
 export default defineComponent({
   name: 'PurchaseManagement',
   setup () {
-    const ordersData = ref([])
+
     const showDrawer = ref<boolean>(false)
     const addOrderForm = ref({
       name: '',
@@ -268,11 +268,14 @@ export default defineComponent({
     })
     const loading = ref<boolean>(false)
     const allProductsOptions = ref([])
+
+    // 采购添加 - 商品名规则
     const productNameRule = {
       validator: (rule: any, value: any, cb: any) => {
         if (!value) {
           cb(new Error('商品名不能为空'))
-        } else {
+        } 
+        else {
           const sameNameItems = addOrderForm.value.items.filter(item => {
             return item.productName === value
           })
@@ -285,13 +288,16 @@ export default defineComponent({
       },
       trigger: 'change'
     }
+
+    // 采购添加 - 商品数量规则
     const purchaseQuantityRule = {
       validator: (rule: any, value: any, cb: any) => {
         const idx = rule.field.split('.')[1]
         const item = addOrderForm.value.items[idx]
         if (value < 1) {
           cb(new Error('数量不能小于1'))
-        } else if (value > item.inventoryCeiling - item.inventory) {
+        } 
+        else if (value > item.inventoryCeiling - item.inventory) {
           cb(new Error('数量不能超过库存上限'))
         } else {
           cb()
@@ -299,39 +305,38 @@ export default defineComponent({
       },
       trigger: 'change'
     }
+
+
+    ////获取元素和翻页获取元素
     const pagination:any= ref({
       total: 0,
       pageIdx: 1,
       pageSize: 8
     })
-//页数变化时，调用这个函数，更改页数信息，监视属性监视到变化，带着页数信息，请求进货信息
-    watch(pagination, async() => {
-        const res = await getOrders(pagination,ordersData)
-        pagination.value.total = res.pagination.value.total
-        ordersData.value = res.ordersData.value
-    },{immediate: true})
-
+    const ordersData = ref([])
+    //发生页数变化动作时，调用这个函数更新页数信息，监视属性监视到变化，带着页数信息，请求进货信息
     function pageChange(pageIdx) {
       pagination.value.pageIdx = pageIdx
     }
-
-    async function getOrders(pagination: any, ordersData: any) {
-      // this.loading = true
+    // 封装函数是通过return获取值，而直接在setup中的函数可以修改上下文中的值 
+    // 必须使用pagination.value 而不是pagination 不然获取不到值
+    watch(pagination.value, async() => {   
+        await getOrders()
+    },{immediate: true})
+    async function getOrders() {
+      loading.value = true    
       let res = null
       res = await getAllPurchaseOrders({ ...pagination.value })
-      ordersData.value = res.data.reduce((res: Array<any>, cur: any) => {
-        res.push(cur.orders[0])
+      // res.data是一个对象数组 order是具体信息数组 获取当前元素信息在【0】中
+      // res上一次回调返回值 cur是被处理元素
+      ordersData.value = res.data.reduce((res: Array<any>, cur: any) => {       
+        res.push(cur.orders[0])       
         return res
       }, [])
       pagination.value.total = res.total
-      // this.loading = false  
-      return {
-        pagination,
-        ordersData
-      }
+      loading.value = false
     }
-    
-    getOrders(pagination,ordersData)
+
 
     return {
       tableColumns,
@@ -347,11 +352,10 @@ export default defineComponent({
       pagination,
       isPermissions,
       isOperator,
-      pageChange
+      pageChange,
+      getOrders
     }
   },
-
-  
   methods: {
     async showAddingDrawer () {
       this.showDrawer = true
@@ -378,7 +382,7 @@ export default defineComponent({
       item.inventoryCeiling = res.data.inventoryCeiling
     },
     handleAddOrder () {
-      this.$refs.AddOrderForm.validate(async (valid: boolean) => {
+      this.$refs.AddOrderForm.validate(async (valid: boolean,pagination,ordersData) => {
         if (valid) {
           let res = null
           const time = Date.now()

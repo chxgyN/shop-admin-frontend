@@ -4,9 +4,11 @@ export interface purchaseOrderType {
 }
 
 export interface addPurchaseOrderType {
-  orderId: string,
+  orderId: number,
   remark: string
   items: Array<purchaseOrderType>,
   purchaserAccount: string,
-  createTime: number
+  createTime: number,
+  // inventoryLocation?: any,
+  // name?:any
 }

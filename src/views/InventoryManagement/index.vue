@@ -401,7 +401,7 @@ export default defineComponent({
             ...this.editProductForm,
             _id: this.editingProductId
           })
-          console.log("@@@"+JSON.stringify(res));
+          // console.log("@@@"+JSON.stringify(res));
           
           this.showAddProductDrawer = false
           this.editingProductId = null
