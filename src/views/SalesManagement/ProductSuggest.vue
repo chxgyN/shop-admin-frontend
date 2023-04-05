@@ -3,6 +3,8 @@
     v-loading="loading"
     class="product-suggest-container"
   >
+  <!-- 水平模式 mode="horizontal" -->
+  <!-- 菜单激活回调 -> 点击后index里面的值赋给typeShow  -->
     <el-menu
       default-active="salesVolumn"
       mode="horizontal"
@@ -34,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, defineProps } from 'vue'
+import { defineComponent, ref} from 'vue'
 import ProductRank from '@/components/ProductSuggest/ProductRank.vue'
 
 export default defineComponent({
@@ -43,7 +45,6 @@ export default defineComponent({
     ProductRank
   },
   setup () {
-    // const props = defineProps(['title'])
     const loading = ref(false)
     const list = ref([])
     const type = ref< 'month' | 'year'>('month')

@@ -1,33 +1,31 @@
 <template>
   <div
     class="product-rank-container"
-    style="text-align: center;margin-bottom: 40px;overflow: hidden;"
   >
     <div
       class="rank-list-container"
-      style="display: flex;align-items: flex-end;justify-content: center;margin-top: 30px;"
     >
+      <!-- click点击事件条件判断 -->
       <div
         v-for="i in 3"
         :key="i"
         class="rank-list__item"
-        style="position: relative;margin: 0 5px;display: flex;flex-direction: column;align-items: center;justify-content: flex-end;"
         :style="{width: 200 * getScale(i) + 'px', cursor: list[getIdx(i)]?.id && 'pointer'}"
         @click=" list[getIdx(i)]?.id && $router.push({path: '/productDetail/' + list[getIdx(i)].id})"
       >
         <img
           :src="list[getIdx(i)]?.image || defaultImgUrl.default"
-          style="display: block;border: 1px solid #ddd;border-radius: 20px;overflow: hidden;"
+          class="rank-list-img"
           :style="{width: 200 * getScale(i) + 'px', height: 240 * getScale(i) + 'px'}"
         >
-        <div style="margin-top: 10px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 100%;">
+        <div>
           {{ (getIdx(i) + 1) + '. ' + (list[getIdx(i)]?._id || '暂无') }}
         </div>
         <SvgIcon
           name="crown"
+          class="rank-list-svg"
           :color="crownColor[getIdx(i)]"
           :hover-change-color="false"
-          style="transform: translateX(-50%) translateY(-50%) rotate(-45deg);position: absolute;left: 0;top: 0;"
         />
       </div>
     </div>
@@ -35,8 +33,10 @@
       ref="moreList"
       class="more-list-container"
       :style="{display: list.length <= 3 ? 'block' : 'grid',
-               gridTemplateColumns: list.length < 7 ? 'repeat(' + (list.length - 3) + ', 1fr)' : 'repeat(4, 1fr)'}"
+               gridTemplateColumns: list.length < 7 ? 'repeat(' + (list.length - 3) + ', 1fr)' : 'repeat(4, 1fr)'
+      }"
     >
+    <!-- slice选中数组中索引从3往后所有的元素  因为是新组成数组所以要 +4-->
       <div
         v-for="(item, idx) in list.slice(3)"
         :key="item._id"
@@ -88,13 +88,15 @@ export default defineComponent({
     }
   },
   watch: {
+    // 通过设置maxHeight来展示或隐藏更多
     showMoreList: {
       handler (val) {
         if (val) {
           this.$nextTick(() => {
             this.$refs.moreList.style.maxHeight = '200px'
           })
-        } else {
+        } 
+        else {
           this.$nextTick(() => {
             this.$refs.moreList.style.maxHeight = 0
           })
@@ -104,9 +106,11 @@ export default defineComponent({
     }
   },
   methods: {
-    getIdx (idx: number) {
+    // 本来是1、2、3 -> 变成1、0、2
+    getIdx (idx: number) {      
       return idx === 2 ? 0 : (idx === 1 ? 1 : 2)
     },
+    // 获取图片比例
     getScale (idx: number) {
       return idx === 1 ? 0.9 : (idx === 2 ? 1 : 0.8)
     }
@@ -115,6 +119,44 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.product-rank-container{
+  text-align: center;
+  margin-bottom: 40px;
+  overflow: hidden;
+  .rank-list-container{
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 40px;
+  }
+  .rank-list__item{
+    position: relative;
+    margin: 0 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    .rank-list-img{
+      display: block;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    div{
+      margin-top: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+    .rank-list-svg{
+      transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
+}
 .show-more {
   display: inline-flex;
   align-items: center;

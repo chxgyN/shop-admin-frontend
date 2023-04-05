@@ -306,7 +306,6 @@ export default defineComponent({
       trigger: 'change'
     }
 
-
     ////获取元素和翻页获取元素
     const pagination:any= ref({
       total: 0,
@@ -337,7 +336,6 @@ export default defineComponent({
       loading.value = false
     }
 
-
     return {
       tableColumns,
       ordersData,
@@ -357,62 +355,70 @@ export default defineComponent({
     }
   },
   methods: {
+
+    // 展示添加采购 并且获取下拉列表的所有商品数据
     async showAddingDrawer () {
       this.showDrawer = true
       await this.getAllProductNames()
     },
     async getAllProductNames () {
-      let filters = {}
-      // console.log(this);
-      
+      let filters = {}      
       if (this.$options.name === 'SalesRecords') {
         filters = {
           inventory: true
         }
       }
       const res = await this.$api.getAllProductNames(filters)
+      // map方法对原数组每一个元素操作，组成一个新的数组
       this.allProductsOptions = res.data.map((item: any) => ({
         label: item.productName,
         value: item.productName
-      }))
+      }))   
     },
+
+    // 添加商品时选中，获取当前商品的库存信息和库存上线信息
     async getProduct (item) {
       const res = await this.$api.getProduct({ productName: escape(item.productName) })
       item.inventory = res.data.inventory
       item.inventoryCeiling = res.data.inventoryCeiling
     },
-    handleAddOrder () {
-      this.$refs.AddOrderForm.validate(async (valid: boolean,pagination,ordersData) => {
+
+    // 添加采购订单后，清除表单、关闭添加抽屉、重新获取订单数据
+    handleAddOrder() {
+      this.$refs.AddOrderForm.validate(async (valid: boolean) => {    
+        // valid表单内容全部合法，则valid值为true，执行对应的业务逻辑    
         if (valid) {
           let res = null
-          const time = Date.now()
-          if (this.$options.name === 'PurchaseManagement') {
-            res = await this.$api.addPurchaseOrder({
-              orderId: time,
-              name: this.addOrderForm.name,
-              inventoryLocation: this.addOrderForm.inventoryLocation,
-              remark: this.addOrderForm.remark,
-              items: this.addOrderForm.items,
-              purchaserAccount: this.$store.state.user.account,
-              createTime: time
-            })
-          } else if (this.$options.name === 'SalesRecords') {
-            res = await this.$api.addSalesOrder({
-              orderId: time,
-              remark: this.addOrderForm.remark,
-              items: this.addOrderForm.items,
-              sellerAccount: this.$store.state.user.account,
-              createTime: time
-            })
-          }
+          const time = Date.now()  
+          // 数据在填写的时候就通过v-model开始绑定        
+          res = await this.$api.addPurchaseOrder({
+            orderId: time,
+            name: this.addOrderForm.name,
+            inventoryLocation: this.addOrderForm.inventoryLocation,
+            remark: this.addOrderForm.remark,
+            items: this.addOrderForm.items,
+            purchaserAccount: this.$store.state.user.account,
+            createTime: time
+          })         
           if (res.code === 0) {
             this.$refs.AddOrderForm.resetFields()
             this.showDrawer = false
             await this.getOrders()
           }
         } else {
-          return false
+          return this.$message.error("请填写必要的表单项！")
         }
+      })
+    },
+
+    // 添加抽屉同时添加多个商品与删除
+    addRowItem () {
+      this.addOrderForm.items.push({
+        productName: '',
+        purchaseQuantity: 100,
+        inventory: 0,
+        inventoryCeiling: 0,
+        key: Date.now()
       })
     },
     deleteRowItem (rowItem: any) {
@@ -420,25 +426,8 @@ export default defineComponent({
       const idx: number = items.findIndex(item => item.key === rowItem.key)
       items.splice(idx, 1)
     },
-    addRowItem () {
-      if (this.$options.name === 'PurchaseManagement') {
-        this.addOrderForm.items.push({
-          productName: '',
-          purchaseQuantity: 100,
-          inventory: 0,
-          inventoryCeiling: 0,
-          key: Date.now()
-        })
-      } else if (this.$options.name === 'SalesRecords') {
-        this.addOrderForm.items.push({
-          productName: '',
-          inventory: 0,
-          salesVolume: 100,
-          key: Date.now()
-        })
-      }
-    },
- 
+    
+    // 删除订单
     async deletePurchaseOrder (row) {
       this.loading = true
       await this.$api.deletePurchaseOrder({
@@ -448,6 +437,7 @@ export default defineComponent({
       this.loading = false
     },
 
+    // 控制采购状态？？？？没找到对应的触发代码
     async handlePurchaseStatusChange (row: any, e: any) {
       this.loading = true
       await this.$api.changePurchaseOrderStatus({

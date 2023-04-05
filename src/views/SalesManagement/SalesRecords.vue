@@ -51,17 +51,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- 分页 -->
-    <!-- <el-pagination
-      v-if="ordersData?.length || loading"
-      style="margin-top: 20px;"
-      background
-      layout="prev, pager, next"
-      :page-size="pagination.pageSize"
-      :total="pagination.total"
-      :current-page="pagination.pageIdx"
-      @current-change="getProducts($event)"
-    /> -->
     <!-- 添加销售记录 - 抽屉 -->
     <el-drawer
       v-model="showDrawer"
@@ -186,6 +175,8 @@ export default defineComponent({
       }]
     })
     const allProductsOptions = ref([])
+
+    // 销售添加 - 商品名规则
     const productNameRule = {
       validator: (rule: any, value: any, cb: any) => {
         if (!value) {
@@ -203,6 +194,8 @@ export default defineComponent({
       },
       trigger: 'change'
     }
+
+    // 销售添加 - 商品数量规则
     const salesVolumeRule = {
       validator: (rule: any, value: any, cb: any) => {
         const idx = rule.field.split('.')[1]
@@ -218,12 +211,7 @@ export default defineComponent({
       trigger: 'change'
     }
     const loading = ref<boolean>(false)
-    // const pagination = {
-    //   total: 0,
-    //   pageIdx: 1,
-    //   pageSize: 10
-    // }
-    // const disabled = !isPermissions('SELL_SELF')
+
     return {
       tableColumns,
       orders,
@@ -234,8 +222,6 @@ export default defineComponent({
       productNameRule,
       salesVolumeRule,
       loading,
-      // pagination,
-      // disabled,
       isOperator,
       isPermissions
     }
@@ -244,62 +230,86 @@ export default defineComponent({
     await this.getOrders()
   },
   methods: {
-    async showAddingDrawer () {
-      this.showDrawer = true
-      await this.getAllProductNames()
+    // 获取销售商品
+    async getOrders () {
+      this.loading = true
+      const res = await this.$api.getAllSalesOrders()
+      this.orders = res.data
+      console.log(this.orders);
+      // res是原数组 prev是初始值或者前一次计算后的结果 cur是正在被处理元素
+      this.ordersData = res.data.reduce((prev: Array<any>, cur: any) => {
+        // concat用于连接两个数组生成新数组
+        return prev.concat(cur.orders)
+      }, [])
+      this.loading = false
     },
-    async getAllProductNames () {
-      let filters = {}
-      // console.log(this);
-      
-      if (this.$options.name === 'SalesRecords') {
-        filters = {
-          inventory: true
-        }
-      }
-      const res = await this.$api.getAllProductNames(filters)
-      this.allProductsOptions = res.data.map((item: any) => ({
-        label: item.productName,
-        value: item.productName
-      }))
-    },
-    async getProduct (item) {
-      const res = await this.$api.getProduct({ productName: escape(item.productName) })
-      item.inventory = res.data.inventory
-      item.inventoryCeiling = res.data.inventoryCeiling
-    },
+    // 添加销售订单后，清除表单、关闭添加抽屉、重新获取订单数据
     handleAddOrder () {
       this.$refs.AddOrderForm.validate(async (valid: boolean) => {
+        // valid表单内容全部合法，则valid值为true，执行对应的业务逻辑  
         if (valid) {
           let res = null
           const time = Date.now()
-          if (this.$options.name === 'PurchaseManagement') {
-            res = await this.$api.addPurchaseOrder({
-              orderId: time,
-              name: this.addOrderForm.name,
-              inventoryLocation: this.addOrderForm.inventoryLocation,
-              remark: this.addOrderForm.remark,
-              items: this.addOrderForm.items,
-              purchaserAccount: this.$store.state.user.account,
-              createTime: time
-            })
-          } else if (this.$options.name === 'SalesRecords') {
-            res = await this.$api.addSalesOrder({
-              orderId: time,
-              remark: this.addOrderForm.remark,
-              items: this.addOrderForm.items,
-              sellerAccount: this.$store.state.user.account,
-              createTime: time
-            })
-          }
+          res = await this.$api.addSalesOrder({
+            orderId: time,
+            remark: this.addOrderForm.remark,
+            items: this.addOrderForm.items,
+            sellerAccount: this.$store.state.user.account,
+            createTime: time
+          })
           if (res.code === 0) {
             this.$refs.AddOrderForm.resetFields()
             this.showDrawer = false
             await this.getOrders()
           }
-        } else {
-          return false
-        }
+        } 
+        else {
+          return this.$message.error("请填写必要的表单项！")
+       }
+      })
+    },
+    // 删除销售订单
+    async deleteSalesOrder (row: any) {
+      this.loading = true
+      await this.$api.deleteSalesOrder({
+        orderId: row.orderId
+      })
+      await this.getOrders()
+      this.loading = false
+    },
+
+
+    // 展示添加采购 并且获取下拉列表的所有商品数据
+    async showAddingDrawer () {
+      this.showDrawer = true
+      await this.getAllProductNames()
+    },
+    async getAllProductNames () {
+      let filters = { inventory: true }
+      const res = await this.$api.getAllProductNames(filters)
+      // map方法对原数组每一个元素操作，组成一个新的数组，包含商品名
+      this.allProductsOptions = res.data.map((item: any) => ({
+        label: item.productName,
+        value: item.productName
+      }))
+    },
+    // 添加商品时选中，获取当前商品的库存信息和库存上线信息并添加到item中
+    // 最后选中的是要通过 确定提交 到后端
+    async getProduct (item) {
+      const res = await this.$api.getProduct({ productName: escape(item.productName) })
+      item.inventory = res.data.inventory
+      item.inventoryCeiling = res.data.inventoryCeiling
+      // console.log(item);
+    },
+
+
+    // 添加抽屉同时添加多个商品与删除
+    addRowItem () {
+      this.addOrderForm.items.push({
+        productName: '',
+        inventory: 0,
+        salesVolume: 100,
+        key: Date.now()
       })
     },
     deleteRowItem (rowItem: any) {
@@ -307,34 +317,23 @@ export default defineComponent({
       const idx: number = items.findIndex(item => item.key === rowItem.key)
       items.splice(idx, 1)
     },
-    addRowItem () {
-      if (this.$options.name === 'PurchaseManagement') {
-        this.addOrderForm.items.push({
-          productName: '',
-          purchaseQuantity: 100,
-          inventory: 0,
-          inventoryCeiling: 0,
-          key: Date.now()
-        })
-      } else if (this.$options.name === 'SalesRecords') {
-        this.addOrderForm.items.push({
-          productName: '',
-          inventory: 0,
-          salesVolume: 100,
-          key: Date.now()
-        })
-      }
-    },
+    
+    // 合并行和列
     spanMethod ({ rowIndex, columnIndex }) {
+      // 设置需要合并的列 0、3、4、5列
       if ((columnIndex !== 1) && (columnIndex !== 2)) {
         let idx = 0
-        for (const item of this.orders) {
+        // 从开始的行开始判断，每一行都判断再渲染  
+        // 包裹的for方法用于读取count属性
+        for (const item of this.orders) { 
           if (rowIndex === idx) {
             return {
+              // 合并行数与列数
               rowspan: item.count,
               colspan: 1
             }
-          } else if (idx > rowIndex) {
+          } 
+          else if (idx > rowIndex) {
             return {
               rowspan: 0,
               colspan: 0
@@ -346,30 +345,15 @@ export default defineComponent({
           rowspan: 0,
           colspan: 0
         }
-      } else {
+      } 
+      else {
         return {
           rowspan: 1,
           colspan: 1
         }
       }
     },
-    async getOrders () {
-      this.loading = true
-      const res = await this.$api.getAllSalesOrders()
-      this.orders = res.data
-      this.ordersData = res.data.reduce((res: Array<any>, cur: any) => {
-        return res.concat(cur.orders)
-      }, [])
-      this.loading = false
-    },
-    async deleteSalesOrder (row: any) {
-      this.loading = true
-      await this.$api.deleteSalesOrder({
-        orderId: row.orderId
-      })
-      await this.getOrders()
-      this.loading = false
-    }
+   
   }
 })
 </script>

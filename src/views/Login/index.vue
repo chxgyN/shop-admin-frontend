@@ -1,7 +1,7 @@
 <template>
   <div class="login-page-container">
-    <el-card
-      style="width: 400px;position: absolute;top: 50%;left: 50%;transform: translateX(-50%) translateY(-50%);"
+    <img src="@/assets/imgs/Shopping_Bags.png" class="login-cover" />
+    <el-card class="login-card"
     >
       <template #header>
         <div style="text-align: center;">
@@ -124,12 +124,23 @@ export default defineComponent({
 
 <style lang="scss">
 .login-page-container {
-  background:  linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url('../../assets/imgs/loginOrRegisterBgImg.jpg') no-repeat;
-  background-size: cover;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  // background:  linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url('../../assets/imgs/loginOrRegisterBgImg.jpg') no-repeat;
+  // background-size: cover;
+  // position: absolute;
+  // left: 0;
+  // right: 0;
+  // top: 0;
+  // bottom: 0;
+  position: relative;
+  .login-cover{
+    transform: scale(0.75);
+  }
+  .login-card{
+    width: 400px;
+    position: absolute;
+    top: 50%;
+    left: 70%;
+    transform: translateX(-50%) translateY(-50%)
+  }
 }
 </style>

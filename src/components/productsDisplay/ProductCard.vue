@@ -103,12 +103,10 @@ export default defineComponent({
   },
   setup () {
     const actionsShow = ref<boolean>(false)
-    // const disabled = !isPermissions('EDIT_PRODUCT')
     return {
       actionsShow,
       defaultImgUrl: require('@/assets/imgs/product.png'),
       isPermissions
-      // disabled
     }
   },
   computed: {

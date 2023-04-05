@@ -5,9 +5,6 @@
       mode="horizontal"
       @select="handleSelect"
     >
-      <!-- <el-menu-item index="week">
-        周
-      </el-menu-item> -->
       <el-menu-item index="month">
         月
       </el-menu-item>
@@ -16,6 +13,9 @@
       </el-menu-item>
     </el-menu>
     <!-- 报表 -->
+    <!-- el-table 元素中注入 data 对象数组后，
+      在 el-table-column 中用 prop 属性来对应对象中的键名即可填入数据，
+      用 label 属性来定义表格的列名 -->
     <el-table
       v-loading="loading"
       style="margin-top: 20px;"
@@ -59,12 +59,8 @@ export default defineComponent({
   watch: {
     type: {
       async handler (type) {
-        // console.log({type});
-  
         const res = await this.$api.getSalesReport({type})
-        this.salesReportData = res.data
-        // console.log(res.data);
-        
+        this.salesReportData = res.data                
       },
       immediate: true
     }

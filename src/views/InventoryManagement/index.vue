@@ -339,7 +339,6 @@ export default defineComponent({
     const editingProductId = ref<string | null>(null)
     const productStatusFilter = ref<string>('')
     const searchText = ref<string>('')
-    // const isEdit = !isPermissions('EDIT_PRODUCT')
     return {
       currentTab,
       showAddProductDrawer,
@@ -354,7 +353,6 @@ export default defineComponent({
       productStatusFilter,
       searchText,
       isPermissions
-      // isEdit
     }
   },
   computed: {
