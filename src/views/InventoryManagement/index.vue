@@ -249,7 +249,7 @@
             </el-button>
             <template #tip>
               <div>
-                只能上传 jpg/png 文件，且不超过 500kb
+                提示: 只能上传 jpg/png 文件，且不超过 500kb
               </div>
             </template>
           </el-upload>
