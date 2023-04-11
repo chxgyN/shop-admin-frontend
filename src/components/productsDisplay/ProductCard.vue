@@ -3,6 +3,7 @@
     <el-card
       class="product-card-container"
     >
+      <!-- 具名插槽 卡片头部 -->
       <template #header>
         <div class="product-card-title">
           <el-tooltip
@@ -20,7 +21,8 @@
           </el-tooltip>
           <span
             style="font-size: 12px;margin-right: 8px;"
-          >状态：
+          >
+            状态：
             <el-tag
               size="mini"
               :type="product.status === '售罄' ? 'danger' : 'success'"
@@ -30,6 +32,7 @@
           </span>
         </div>
       </template>
+      <!-- 应该是默认插槽 -->
       <div
         class="product-card-content"
         @mouseenter="showHoverActions && (actionsShow = true)"
@@ -50,6 +53,7 @@
         <span style="grid-area: p">{{ product.inventory }}</span>
         <span style="grid-area: s">库存上限：</span>
         <span style="grid-area: t">{{ product.inventoryCeiling }}</span>
+        <!-- 鼠标移入事件 将actionsshow改为true -->
         <transition name="fade">
           <div
             v-show="actionsShow"
@@ -62,6 +66,7 @@
               :disabled="!isPermissions('EDIT_PRODUCT')"
               @click="$emit('editProduct')"
             />
+            <!-- 具名插槽 -->
             <el-popconfirm
               title="确定删除此商品吗？"
               confirm-button-text="确定"

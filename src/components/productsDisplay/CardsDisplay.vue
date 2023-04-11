@@ -5,6 +5,8 @@
       v-if="products.length"
       class="cards-display-container"
     >
+    <!-- 删除之后通过getProducts自定义事件 重新获取商品数据 -->
+    <!-- 触发编辑 -->
       <ProductCard
         v-for="product in products"
         :key="product.productName"
@@ -35,7 +37,6 @@
 import { defineComponent, ref} from 'vue'
 import ProductCard from './ProductCard.vue'
 import getProducts from '@/hook/getProducts'
-// import { getProdectResType } from '@/api/types/product'
 
 export default defineComponent({
   name: 'CardsDisplay',
@@ -62,11 +63,8 @@ export default defineComponent({
     const products: any = ref([])
     const pageIdx = ref(1)
     const pageSize = ref(6)
-
-    // watch(props.allFilters, async() => {
-    //   await loadProducts()
-    // },{immediate: true})
-
+    
+    // 一上来先获取一次数据 等到allfilter变化 再调用一次
     async function loadProducts() {
       const result = await getProducts(props.allFilters)
       products.value = result.products
@@ -75,6 +73,8 @@ export default defineComponent({
       pageSize.value = result.pageSize
     }
 
+    // 翻页获取商品数据
+    // 当页码发生变化时，就调用该函数，根据页数去获取对应的商品，感觉不需要pageIdx
     async function handlePageChange(newPageIdx) {
       const result = await getProducts(props.allFilters, newPageIdx)
       products.value = result.products

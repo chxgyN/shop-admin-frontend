@@ -9,6 +9,7 @@
     @mouseenter="hoverChangeColor && (iconColor = props.hoverColor)"
     @mouseleave="hoverChangeColor && (iconColor = props.color)"
   >
+  
     <use
       :xlink:href="`#icon-${props.name}`"
       :fill="iconColor"
@@ -17,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRefs, ref, watch } from 'vue'
+import { defineComponent, toRef, ref, watch } from 'vue'
 
 export default defineComponent({
   name: 'SvgIcon',
@@ -44,11 +45,17 @@ export default defineComponent({
     }
   },
   setup (props) {
-    const { color } = toRefs(props)
+    // props是一个proxy对象 props.color 是一个字符串，没有引用式 此时形成代理
+    const color = toRef(props, 'color')
+    // 通过color的值创造新的ref对象
     const iconColor = ref(color.value)
+    // 不相同
+    // console.log(color === iconColor);
+    
     watch(color, (newColor: string) => {
       iconColor.value = newColor
     })
+
     return {
       props,
       iconColor

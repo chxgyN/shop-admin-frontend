@@ -17,7 +17,7 @@ export interface editProductType {
 }
 
 export interface getProductType {
-  _id: string
+  _id: string | string[]
 }
 
 export interface getProdectResType {

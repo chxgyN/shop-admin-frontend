@@ -9,11 +9,13 @@
     >
       返回
     </el-button>
+
     <ProductCard
-      :show-hover-actions="false"
-      style="margin-top: 20px;"
-      :product="product"
+    :show-hover-actions="false"
+    style="margin-top: 10px;"
+    :product="product"
     />
+
     <el-table
       v-loading="tableLoading"
       style="margin-top: 20px;"
@@ -47,6 +49,8 @@
 import { defineComponent, ref } from 'vue'
 import ProductCard from '@/components/productsDisplay/ProductCard.vue'
 import inventoryChangeTableColumns from './inventoryChangeTableColumns'
+import { useRouter } from 'vue-router';
+import {getProduct, getProductInventoryChange} from "@/api/api"
 
 export default defineComponent({
   name: 'ProductDetail',
@@ -54,24 +58,31 @@ export default defineComponent({
     ProductCard
   },
   setup () {
+    const router = useRouter()    
     const product = ref({})
     const tableLoading = ref<boolean>(false)
-    const productInventoryChangeTableData = ref([])
+    const productInventoryChangeTableData: any = ref([])
+    
+    async function getInfo() {     
+      let res = await getProduct({ _id: router.currentRoute.value.params._id })
+      product.value = res.data
+      tableLoading.value = true
+      res = await getProductInventoryChange({ _id: router.currentRoute.value.params._id })
+      productInventoryChangeTableData.value = res.data
+      tableLoading.value = false
+    }
+
+    getInfo()
+
     return {
       product,
       tableLoading,
       inventoryChangeTableColumns,
-      productInventoryChangeTableData
+      productInventoryChangeTableData,
+      getInfo
     }
   },
-  async mounted () {
-    let res = await this.$api.getProduct({ _id: this.$route.params._id })
-    this.product = res.data
-    this.tableLoading = true
-    res = await this.$api.getProductInventoryChange({ _id: this.$route.params._id })
-    this.productInventoryChangeTableData = res.data
-    this.tableLoading = false
-  }
+
 })
 </script>
 

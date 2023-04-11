@@ -16,22 +16,25 @@
     <!-- el-table 元素中注入 data 对象数组后，
       在 el-table-column 中用 prop 属性来对应对象中的键名即可填入数据，
       用 label 属性来定义表格的列名 -->
-    <el-table
+    <div ref="listWrap" style="height:550px;overflow-y: scroll;">
+      <el-table
       v-loading="loading"
       style="margin-top: 20px;"
       :data="salesReportData"
       border
     >
-      <el-table-column
-        v-for="column in salesReportTableColumns"
-        :key="column.key"
-        :width="column.width"
-        :fixed="column.fixed"
-        :label="column.label"
-        :prop="column.key"
-        show-overflow-tooltip
-      />
-    </el-table>
+        <el-table-column
+          v-for="column in salesReportTableColumns"
+          :key="column.key"
+          :width="column.width"
+          :fixed="column.fixed"
+          :label="column.label"
+          :prop="column.key"
+          show-overflow-tooltip
+        />
+      </el-table>
+    </div>
+    
   </div>
 </template>
 
@@ -56,6 +59,9 @@ export default defineComponent({
       salesReportTableColumns
     }
   },
+  // mounted() {
+  //   this.$refs.listWrap.style.height = '100px' // 设置可视区域的高度
+  // },
   watch: {
     type: {
       async handler (type) {

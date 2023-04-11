@@ -12,16 +12,16 @@ export default [
   {
     key: 'unit',
     label: '单位',
-    width: '80'
+    width: '60'
   },
   {
     key: 'inventory',
     label: '库存量',
-    width: '100'
+    width: '80'
   },
   {
     key: 'inventoryCeiling',
     label: '库存上限',
-    width: '100'
+    width: '80'
   }
 ]

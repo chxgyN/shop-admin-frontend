@@ -8,6 +8,7 @@
       class="tabs-container"
       style="display: flex; align-items: center;"
     >
+    <!-- 封装的svg组件  use?? event if?? -->
       <SvgIcon
         name="cards"
         :size="24"
@@ -27,16 +28,19 @@
     <!-- 筛选和操作 -->
     <div
       class="filters-and-actions-container"
-      style="margin-top: 20px;display: flex;align-items: center;align-items: center;justify-content: space-between;"
+      style="margin-top: 20px;
+             display: flex;
+             align-items: center;
+             justify-content: space-between;"
     >
       <!-- 筛选 -->
       <div
         class="filters-container"
         style="display: flex;"
       >
+      <!-- v-model与value值进行绑定 label是展示值 -->
         <el-select
           v-model="productStatusFilter"
-          placeholder="请选择商品状态"
           size="small"
         >
           <el-option
@@ -45,6 +49,7 @@
             :label="item.label"
             :value="item.value"
           />
+          
         </el-select>
         <el-input
           v-model="searchText"
@@ -64,6 +69,7 @@
         >
           添加商品
         </el-button>
+        <!-- 批量删除验证 -->
         <el-popconfirm
           v-if="currentTab === 'table'"
           title="确定删除已选商品？"
@@ -101,6 +107,7 @@
       />
     </div>
     <!-- 添加商品 - 抽屉 -->
+
     <el-drawer
       v-model="showAddProductDrawer"
       :title="editingProductId ? '编辑商品' : '添加商品'"
@@ -108,6 +115,7 @@
       direction="rtl"
       destroy-on-close
     >
+    <!-- direction 抽屉打开方向 -->
       <el-form
         ref="AddProductForm"
         style="padding: 20px 40px 20px 20px;"
@@ -116,11 +124,12 @@
         label-width="80px"
         label-position="left"
       >
+      <!-- prop必须和v-model一致 -->
         <el-form-item
           label="商品名"
           prop="productName"
         >
-          <el-input v-model="addProductForm.productName" />
+          <el-input v-model="addProductForm.productName"/>
         </el-form-item>
         <el-form-item
           label="商品图片"
@@ -199,7 +208,7 @@
         </el-button>
         <el-button
           type="primary"
-          @click=" addCommit"
+          @click="addCommit"
         >
           确定
         </el-button>
@@ -375,22 +384,30 @@ export default defineComponent({
     }
   },
   methods: {
+    // 获取图片文件 并将其转换为 base64格式 再放入addProductForm中
     beforeProductImageUpload (file: any) {
       // 将上传的图片转为base64格式
       const reader = new FileReader()
+      // e.target是触发事件的对象，也就是reader对象本身
       reader.onload = (e) => {
         this.addProductForm.image = e.target.result
       }
+      // 当reader对象成功地读取了一个文件后，才会执行onload函数
       reader.readAsDataURL(file)
       return false // 屏蔽默认上传
     },
 
+    // 自定义事件 从子组件触发的编辑 row是当前商品信息
     handleEditProduct (row: any) {      
+      // 打开抽屉
       this.showEditProductDrawer = true
+      // 这两个数据用于等会儿提交编辑信息
+      // 深层克隆一份，不会影响原数据
       this.editProductForm = cloneDeep(row)      
       this.editingProductId = row._id
     },
 
+    // 提交编辑信息
     async editCommit() {      
       this.$refs.EditProductForm.validate(async (isValid: boolean) => {
         if (isValid) {
@@ -399,7 +416,7 @@ export default defineComponent({
             _id: this.editingProductId
           })          
           this.showEditProductDrawer = false
-          this.editingProductId = null
+          // this.editingProductId = null
           this.refresh = !this.refresh
           this.$refs.EditProductForm.resetFields()
           
@@ -409,14 +426,16 @@ export default defineComponent({
         }
       })
     },
-
+    // 提交增加信息
     async addCommit () {
       this.$refs.AddProductForm.validate(async (isValid: boolean) => {
         if (isValid) {    
           let res = await this.$api.addProduct(this.addProductForm)
           this.showAddProductDrawer = false
-          this.editingProductId = null
+          // this.editingProductId = null
+          // ？？refresh
           this.refresh = !this.refresh
+          // 重置表单 element api
           this.$refs.AddProductForm.resetFields()
           
         } 
@@ -430,6 +449,9 @@ export default defineComponent({
       this.currentTab = tab
     },
 
+
+
+    // ???
     deleteSelectedProducts () {
       (this.$refs.tableDisplay as any).deleteSelectedProducts()
     }

@@ -7,10 +7,16 @@
       border
       @selection-change="handleSelectionChange"
     >
+    <!-- 
+      当el-table元素中注入data对象数组后，
+      在el-table-column中用prop属性来对应对象中的键名即可填入数据，
+      用label属性来定义表格的列名。可以使用width属性来定义列宽。 
+    -->
       <el-table-column
         type="selection"
-        width="50"
+        width="40"
       />
+      <!-- fixed代表固定列 -->
       <el-table-column
         label="商品名"
         :fixed="true"
@@ -85,7 +91,6 @@
       :current-page="pagination.pageIdx"
       @current-change="getProducts($event)"
     />
-    <div></div>
   </div>
 </template>
 
@@ -95,7 +100,6 @@ import columns from './tableColumns'
 import isPermissions from '@/hook/isPermissions'
 import { getAllProducts} from '@/api/api'
 import { debounce } from 'lodash'
-// import getProducts from '@/hook/getProducts'
 
 export default defineComponent({
   name: 'TableDisplay',
@@ -128,7 +132,7 @@ export default defineComponent({
         if (key !== 'refresh' && props.allFilters[key]) {
           res[key] = props.allFilters[key]
         }
-        return res
+        return res  
       }, {})   
       pagination.pageIdx = pageIdx
       loading.value = true
@@ -139,9 +143,7 @@ export default defineComponent({
       loading.value = false
       products.value = res.data
       pagination.total = res.total
-    }, 1000)
-
-    getProducts()
+    }, 200)
 
     return {
       columns,
