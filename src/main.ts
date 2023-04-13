@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import ElementPlus from 'element-plus'
 import 'element-plus/lib/theme-chalk/index.css'
-import plugin from './plugin'
+import plugin from './plugin/plugin'
 import * as API from '@/api/api'
 import io from 'socket.io-client'
 

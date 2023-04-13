@@ -235,7 +235,7 @@ export default defineComponent({
       this.loading = true
       const res = await this.$api.getAllSalesOrders()
       this.orders = res.data
-      console.log(this.orders);
+      // console.log(this.orders);
       // res是原数组 prev是初始值或者前一次计算后的结果 cur是正在被处理元素
       this.ordersData = res.data.reduce((prev: Array<any>, cur: any) => {
         // concat用于连接两个数组生成新数组

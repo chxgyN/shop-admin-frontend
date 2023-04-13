@@ -16,7 +16,6 @@
         style="cursor: default;"
       >
         <UserAvatar/>
-        <!-- <UserAvatar :avatar="$store.state.user.avatar" /> -->
         <span>{{ username }}</span>
       </div>
       <el-divider direction="vertical" />
@@ -71,7 +70,6 @@ export default defineComponent({
       this.$store.commit('setUser', {})
       localStorage.setItem('userInfo', '')
       this.$router.replace({ path: '/login' })
-      // this.$router.replace({ path: '/loginOrRegister/login' })
     }
   }
 })

@@ -4,11 +4,12 @@
       class="personal-center-container"
       style="display: flex;justify-content: space-around;"
     >
-      <!-- 聊天用户选择 -->
+      <!-- 选择 - 修改信息用户 -->
       <el-scrollbar
         height="70vh"
         style="width: 20%;"
       >
+        <!-- 绑定需要激活的 人员信息 传入一个数组 -->
         <el-collapse
           v-model="activeGroups"
           style="border-bottom: none;padding-right: 10px;"
@@ -19,8 +20,7 @@
             :title="userGroup._id"
             :name="userGroup._id"
           >
-            <!-- @click="selectUser(user)" -->
-            <!-- :class="{'user-group__item--active': selectingUserAccount === user.account}" -->
+          <!-- userGroup.users里面就一个对象，相当于简写这里 -->
             <div
               v-for="user in userGroup.users"
               :key="user.account"
@@ -31,7 +31,6 @@
               <div style="display: flex;align-items: center;">
                 <UserAvatar
                   :size="10"
-        
                   style="margin-right: 5px;"
                 />
                 <span>{{ user.username }}</span>
@@ -60,19 +59,7 @@
           >
             <UserAvatar
               :size="108"
-             
             />
-            <el-upload
-              action="#"
-            >
-            <!-- <el-upload
-              action="#"
-              :before-upload="beforeProductImageUpload"
-            > -->
-              <!-- <el-button size="small">
-                上传头像
-              </el-button> -->
-            </el-upload>
           </div>
           <el-divider
             style="margin: 20px 0;"
@@ -156,9 +143,6 @@
       const username = ref<string>('')
       const editingUsername = ref<boolean>(false)
       const loading = ref<boolean>(false)
-      const chatPartner = ref(null)
-      const chatContents = ref([])
-      const chattingContent = ref('')
       const showingUserAccount = ref(null)
       const selectingUserAccount = ref(null)
       return {
@@ -168,12 +152,9 @@
         username,
         editingUsername,
         loading,
-        chatPartner,
-        chatContents,
-        chattingContent,
-        showingUserAccount, // 显示的用户
         ROLE_LIST,
-        selectingUserAccount // 点击选中的用户
+        showingUserAccount, // 右边显示的用户
+        selectingUserAccount // 点击选中的用户 浅蓝背景效果
       }
     },
     computed: {
@@ -181,6 +162,7 @@
         return this.$store.state.user.account
       }
     },
+
     async created () {
       this.showingUserAccount = this.userAccount
       this.selectingUserAccount = this.userAccount
@@ -191,47 +173,27 @@
       })
     },
     methods: {
-      async selectUser (user) {
-        this.selectingUserAccount = user.account
-        if (this.editingUsers) {
-          this.showingUserAccount = user.account
-          await this.getUserInfo()
-        } else {
-          if (user.account === this.userAccount) {
-            this.chatPartner = null
-          } else {
-            this.selectChatPartner(user)
-          }
-        }
+      // 点击触发，当前浅蓝背景和右边信息，获取当前详细信息
+      async selectUser (user) {    
+        this.selectingUserAccount = user.account        
+        this.showingUserAccount = user.account
+        // getUserInfo 就是获取右边 showingUserAccount的信息
+        await this.getUserInfo()
       },
+
+      // 判断是否为本人标识
       isSelf (userAccount) {
         return userAccount === this.userAccount
       },
+
+      // 获取所有人员信息
       async getUserGroups () {
         this.loading = true
-        const res = await this.$api.getUserGroups()
+        const res = await this.$api.getUserGroups()        
         this.userGroups = res.data
         this.loading = false
       },
-      async editOrSaveUsername () {
-        if (this.editingUsername) { // 保存
-          if (this.username) {
-            this.userInfo.username = this.username
-            await this.updateUserInfo()
-          } else {
-            this.$message({
-              type: 'error',
-              message: '用户名不能为空'
-            })
-          }
-        } else { // 编辑
-          this.username = this.userInfo.username
-        }
-        this.editingUsername = !this.editingUsername
-        this.loading = true
-        await this.getUserGroups()
-        this.loading = false
-      },
+      // 获取右边显示的用户信息
       async getUserInfo () {
         this.loading = true
         const res = await this.$api.getUserInfo({ account: this.showingUserAccount })
@@ -241,17 +203,28 @@
         }
         this.loading = false
       },
-      // beforeProductImageUpload (file: any) {
-      //   // 将上传的图片转为base64格式
-      //   const reader = new FileReader()
-      //   reader.onload = async (e) => {
-      //     this.userInfo.avatar = e.target.result
-      //     await this.updateUserInfo()
-      //     await this.getUserInfo()
-      //   }
-      //   reader.readAsDataURL(file)
-      //   return false // 屏蔽默认上传
-      // },
+      // 编辑用户名
+      async editOrSaveUsername () {
+        if (this.editingUsername) { 
+          if (this.username) {
+            this.userInfo.username = this.username
+            await this.updateUserInfo()
+          } else {
+            this.$message({
+              type: 'error',
+              message: '用户名不能为空'
+            })
+          }
+        } else { 
+          this.username = this.userInfo.username
+        }
+        this.editingUsername = !this.editingUsername
+        // this.loading = true
+        // await this.getUserInfo()
+        // this.loading = false
+      },
+
+      // 修改名字和职位都要调用 不调用不是实时更新
       async updateUserInfo () {
         await this.$api.updateUserInfo({
           ...this.userInfo,

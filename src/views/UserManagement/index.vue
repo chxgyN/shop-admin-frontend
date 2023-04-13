@@ -7,6 +7,7 @@
       style="margin-bottom: 30px;"
       @select="typeShow = $event"
     >
+      <!-- el-menu 中间三个都是样式 -->
       <el-menu-item index="edit">
         管理用户信息
       </el-menu-item>
@@ -127,7 +128,7 @@ import { defineComponent, ref } from 'vue'
 import { registerFormRules, registerForm } from '@/views/UserManagement/registerFormModel'
 import CryptoJS from 'crypto-js'
 import { ROLE_LIST } from '@/constants/constants'
-import EditPersonalCenter from "@/views/EditPersonalCenter/index.vue"
+import EditPersonalCenter from "@/components/EditPersonalCenter/index.vue"
 import tableColumns from './tableColumns'
 
 export default defineComponent({
@@ -148,6 +149,7 @@ export default defineComponent({
       userRoleChangeData
     }
   },
+
   watch: {
     async typeShow (val: string) {
       if (val === 'record') {
@@ -155,14 +157,13 @@ export default defineComponent({
       }
     }
   },
-  // async created () {
-  //   await this.getUserRoleChangeData()
-  // },
+  // 获取职位变动信息
   methods: {
     async getUserRoleChangeData () {
       const res = await this.$api.getUserRoleChangeRecords()
       this.userRoleChangeData = res.data
     },
+
     async register () {
       this.$refs.RegisterForm.validate(async (isValid: boolean) => {
         if (isValid) {

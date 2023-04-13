@@ -1,53 +1,31 @@
 <template>
-  <!-- <img
-    v-if="avatar"
-    :src="avatar"
-    :width="1.4 * size"
-    :height="1.4 * size"
-    style="border-radius: 50%;"
-  > -->
   <div
- 
     class="avatar-container"
     style="background: #fff;box-sizing: border-box;border: 1px solid #ccc;border-radius: 50%;text-align: center;display: inline-flex;align-items: center;justify-content: center;"
     :style="{width: 1.4 * size + 'px', height: 1.4 * size + 'px'}"
   >
     <SvgIcon
-      name="user"
-      :size="size"
-      color="#8a8a8a"
-      :hover-change-color="false"
+    name="user"
+    :size="size"
+    color="#8a8a8a"
+    :hover-change-color="false"
     />
   </div>
 </template>
 
-<script>
-// import { useStore } from 'vuex';
-import { defineComponent } from 'vue';
+<script lang='ts'>
+import {defineComponent} from 'vue'
 export default defineComponent({
-  name: 'UserAvatar',
-  props: {
-    size: {
-      type: Number,
-      default: 24
+    name: 'UserAvatar',
+    props:{
+        size:{
+            type:Number,
+            default: 24
+        }
     },
-    // avatar: {
-    //   type: String,
-    //   default: ''
-    // }
-  },
-  // setup(){
-  //   const store = useStore()
-  //   let avatar = store.state.user.avatar
-  //   return{
-  //     avatar
-  //   }
-
-  // }
- 
 })
+   
 </script>
-
-<style>
+<style scoped>
 
 </style>

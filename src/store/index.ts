@@ -13,7 +13,6 @@ const user: UserState = {
 
 const mutations = {
   setUser(state: RootState, user: UserState) {
-    // console.log("@@"+JSON.stringify(user));
     state.user = user
   }
 }

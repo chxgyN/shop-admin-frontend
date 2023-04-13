@@ -1,16 +1,14 @@
 <template>
   <div class="login-page-container">
     <img src="@/assets/imgs/Shopping_Bags.png" class="login-cover" />
-    <el-card class="login-card"
-    >
+    <el-card class="login-card">
       <template #header>
-        <div style="text-align: center;">
+        <div class ="login-title">
           零食量贩店进销存系统
         </div>
       </template>
       <div
         class="form-content-container"
-        style="padding: 0 20px;"
       >
         <!-- 登录表单 -->
         <el-form
@@ -83,7 +81,7 @@ export default defineComponent({
             account: this.loginForm.account,
             password: CryptoJS.MD5(this.loginForm.password).toString()
           })
-          console.log(res);
+          // console.log(res);
           
           if (res.code === 0) {
             const user = {
@@ -124,13 +122,6 @@ export default defineComponent({
 
 <style lang="scss">
 .login-page-container {
-  // background:  linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url('../../assets/imgs/loginOrRegisterBgImg.jpg') no-repeat;
-  // background-size: cover;
-  // position: absolute;
-  // left: 0;
-  // right: 0;
-  // top: 0;
-  // bottom: 0;
   position: relative;
   .login-cover{
     transform: scale(0.75);
@@ -140,7 +131,14 @@ export default defineComponent({
     position: absolute;
     top: 50%;
     left: 70%;
-    transform: translateX(-50%) translateY(-50%)
+    transform: translateX(-50%) translateY(-50%);
+    .login-title{
+      text-align: center;
+    }
+    .form-content-container{
+      padding: 0 20px
+    }
   }
+
 }
 </style>

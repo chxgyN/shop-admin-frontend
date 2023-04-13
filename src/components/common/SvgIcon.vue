@@ -9,7 +9,6 @@
     @mouseenter="hoverChangeColor && (iconColor = props.hoverColor)"
     @mouseleave="hoverChangeColor && (iconColor = props.color)"
   >
-  
     <use
       :xlink:href="`#icon-${props.name}`"
       :fill="iconColor"
