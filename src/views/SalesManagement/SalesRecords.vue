@@ -1,6 +1,7 @@
 <template>
   <div style="padding: 10px 20px;">
-    <div class="actions-container">
+    <div class="actions-container"
+         style="margin-bottom: 20px;">
       <el-button
         size="small"
         :disabled="!isPermissions('SELL_SELF')"
@@ -9,48 +10,50 @@
         添加销售记录
       </el-button>
     </div>
-    <!-- 订单表 -->
-    <el-table
-      v-loading="loading"
-      style="margin-top: 20px;"
-      :data="ordersData"
-      :span-method="spanMethod"
-      border
-    >
-      <el-table-column
-        v-for="column in tableColumns"
-        :key="column.key"
-        :width="column.width"
-        :fixed="column.fixed"
-        :label="column.label"
-        :prop="column.key"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        label="操作"
-        width="100"
-        fixed="right"
-      >
-        <template #default="scope">
-          <el-popconfirm
-            title="确定删除此销售记录吗？"
-            confirm-button-text="确定"
-            cancel-button-text="取消"
-            @confirm="deleteSalesOrder(scope.row)"
+    <div ref='scrollContainer' class="scrollContainer" @scroll.passive="handleScroll">
+      <div :style="blankFillStyle">
+        <el-table
+        v-loading="loading"
+        :data="showDataList"
+        :span-method="spanMethod"
+        border
+        >
+          <el-table-column
+            v-for="column in tableColumns"
+            :key="column.key"
+            :width="column.width"
+            :fixed="column.fixed"
+            :label="column.label"
+            :prop="column.key"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="操作"
+            width="100"
+            fixed="right"
           >
-            <template #reference>
-              <el-button
-                size="small"
-                type="danger"
-                :disabled="!(isPermissions('SELL_SELF') || isOperator(scope.row.sellerAccount))"
+            <template #default="scope">
+              <el-popconfirm
+                title="确定删除此销售记录吗？"
+                confirm-button-text="确定"
+                cancel-button-text="取消"
+                @confirm="deleteSalesOrder(scope.row)"
               >
-                删除
-              </el-button>
+                <template #reference>
+                  <el-button
+                    size="small"
+                    type="danger"
+                    :disabled="!(isPermissions('SELL_SELF') || isOperator(scope.row.sellerAccount))"
+                  >
+                    删除
+                  </el-button>
+                </template>
+              </el-popconfirm>
             </template>
-          </el-popconfirm>
-        </template>
-      </el-table-column>
-    </el-table>
+          </el-table-column>
+        </el-table>
+      </div>  
+    </div>
     <!-- 添加销售记录 - 抽屉 -->
     <el-drawer
       v-model="showDrawer"
@@ -158,10 +161,44 @@ import { defineComponent, ref } from 'vue'
 import tableColumns from './tableColumns'
 import isPermissions from '@/hook/isPermissions'
 import isOperator from '@/hook/isOperator'
-
 export default defineComponent({
   name: 'SalesRecords',
+  mounted(){
+    console.time("render时间：");
+    this.$nextTick(() => {
+      console.timeEnd("render时间：");
+    });
+    this.getContainSize()
+  },
+  computed:{
+    endIndex() {
+      if(this.ordersData.length){
+        // 解决无限滚动
+        if(!this.ordersData[this.startIndex + this.containSize]){
+          return this.ordersData.length - 1
+        }        
+        return this.startIndex + this.containSize
+      }
+    },
+    showDataList() {      
+      if(this.ordersData.length) {
+        return this.ordersData.slice(this.startIndex, this.endIndex) 
+      }
+
+    },
+    blankFillStyle(){     
+      return {
+        paddingTop:this.startIndex * this.itemHeight + 'px',      
+        paddingBottom:(this.ordersData.length - this.endIndex - 1) * this.itemHeight + 'px'
+      }
+    }
+  },
   setup () {
+    const isScrollStatus = ref(true)
+    const startOffset = ref(0)
+    const startIndex = ref(0)
+    const itemHeight = ref(57)// item高度
+    const containSize = ref(0) // 展示的数据
     const orders = ref([])
     const ordersData = ref([])
     const showDrawer = ref<boolean>(false)
@@ -169,13 +206,12 @@ export default defineComponent({
       remark: '',
       items: [{
         productName: '',
-        salesVolume: 100,
+        salesVolume: 1,
         inventory: 0,
         key: Date.now()
       }]
     })
     const allProductsOptions = ref([])
-
     // 销售添加 - 商品名规则
     const productNameRule = {
       validator: (rule: any, value: any, cb: any) => {
@@ -194,7 +230,6 @@ export default defineComponent({
       },
       trigger: 'change'
     }
-
     // 销售添加 - 商品数量规则
     const salesVolumeRule = {
       validator: (rule: any, value: any, cb: any) => {
@@ -211,7 +246,6 @@ export default defineComponent({
       trigger: 'change'
     }
     const loading = ref<boolean>(false)
-
     return {
       tableColumns,
       orders,
@@ -223,21 +257,62 @@ export default defineComponent({
       salesVolumeRule,
       loading,
       isOperator,
-      isPermissions
+      isPermissions,
+      startIndex,
+      itemHeight,
+      containSize,
+      startOffset,
+      isScrollStatus
     }
   },
+
   async created () {
     await this.getOrders()
   },
   methods: {
+    // 没有padding 列表下拉 顶部dom元素强制删除 startIndex会重新计算
+    handleScroll(){
+      // let requestAnimationFrame = window.requestAnimationFrame 
+      // let fps = 30 ;
+      // let interval = 1000/fps ;
+      // let then = Date.now();
+      // requestAnimationFrame(()=>{
+      //   let now = Date.now();
+      //   const start = Math.floor(this.scrollTop / this.itemHeight);
+      //   if (start !== this.startIndex ){
+        if(this.isScrollStatus){
+          this.isScrollStatus = false
+          let timer = setTimeout(() => {
+            this.isScrollStatus = true
+            clearTimeout(timer)
+          }, 30);
+          setTimeout(() => {
+            this.startIndex = ~~((this.$refs.scrollContainer.scrollTop - 48) / this.itemHeight);
+            console.log(this.startIndex , this.endIndex);
+          }, 0);
+        }
+      //   }
+      //   if(now-then >= interval){
+      //     then = now;
+      //     // requestAnimationFrame( arguments.callee );
+      //     requestAnimationFrame((timestamp) => {
+      //       this.handleScroll();
+      //     });
+      //   }
+      // })
+    },
+    
+    getContainSize () {
+      // 11
+      this.containSize = this.$refs.scrollContainer.offsetHeight / this.itemHeight + 1      
+    },
     // 获取销售商品
     async getOrders () {
       this.loading = true
       const res = await this.$api.getAllSalesOrders()
       this.orders = res.data
-      // console.log(this.orders);
       // res是原数组 prev是初始值或者前一次计算后的结果 cur是正在被处理元素
-      this.ordersData = res.data.reduce((prev: Array<any>, cur: any) => {
+      this.ordersData= res.data.reduce((prev: Array<any>, cur: any) => {
         // concat用于连接两个数组生成新数组
         return prev.concat(cur.orders)
       }, [])
@@ -277,8 +352,6 @@ export default defineComponent({
       await this.getOrders()
       this.loading = false
     },
-
-
     // 展示添加采购 并且获取下拉列表的所有商品数据
     async showAddingDrawer () {
       this.showDrawer = true
@@ -301,8 +374,6 @@ export default defineComponent({
       item.inventoryCeiling = res.data.inventoryCeiling
       // console.log(item);
     },
-
-
     // 添加抽屉同时添加多个商品与删除
     addRowItem () {
       this.addOrderForm.items.push({
@@ -317,7 +388,6 @@ export default defineComponent({
       const idx: number = items.findIndex(item => item.key === rowItem.key)
       items.splice(idx, 1)
     },
-    
     // 合并行和列
     spanMethod ({ rowIndex, columnIndex }) {
       // 设置需要合并的列 0、3、4、5列
@@ -359,6 +429,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.scrollContainer{
+  height: 570px;
+  width: 100%;
+  overflow-y: auto;
+}
 :deep(.el-drawer.rtl) {
   overflow: scroll !important;
 }
