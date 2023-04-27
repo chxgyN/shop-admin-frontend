@@ -7,7 +7,8 @@ export default [
   },
   {
     key: 'productName',
-    label: '商品名'
+    label: '商品名',
+    width: '150'
   },
   {
     key: 'salesVolume',
@@ -27,5 +28,6 @@ export default [
   {
     key: 'remark',
     label: '备注'
-  }
+  },
+
 ]

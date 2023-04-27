@@ -208,7 +208,7 @@ export default defineComponent({
       await this.getOrderDetail()
     },
 
-
+    // 传入状态，判断是否完成
     hasDone (status: string) {
       if (!this.purchaseStatus) {
         return false
@@ -219,6 +219,7 @@ export default defineComponent({
       return false
     },
 
+    // 传入状态，判断横条颜色
     isTimeLineFinished (status: string) {
       if (!this.purchaseStatus) {
         return false
@@ -252,6 +253,7 @@ export default defineComponent({
   // 从上至下垂直排列子元素
   flex-direction: column;
   position: relative;
+  width: 100%;
   height: 55px;
   justify-content: space-between;
   // 大小自适应计算
