@@ -40,7 +40,7 @@ yarn lint
 ![image](https://github.com/chxgyN/shop-admin-frontend/blob/main/img/QQ%E6%88%AA%E5%9B%BE20230428105422.png)
 
 ## 联系作者
-Email:chxgyN@outlook.com
+chxgyN@outlook.com
 
 ## License
 GPL
