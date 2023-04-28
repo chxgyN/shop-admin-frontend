@@ -1,33 +1,33 @@
-### 项目介绍
+## 项目介绍
 该项目是零食量贩店的进销存管理系统，主要分为商品进货、商品销售记录、商品仓库管理与人员权限管理模块，除了正常的增删改查功能外，还对销售情况进行可视化展示，并根据销售情况进行进货推荐
 
-### 运行
+## 运行
 ```
 yarn install
 ```
 
-### 开发环境热更新
+## 开发环境热更新
 ```
 yarn serve
 ```
 
-### 生产打包
+## 生产打包
 ```
 yarn build
 ```
 
-### 修复文件格式
+## 修复文件格式
 ```
 yarn lint
 ```
 
-### 模块
+## 模块
 - 采购管理模块
 - 库存管理模块
 - 销售管理模块
 - 用户管理模块
 
-### 项目截图
+## 项目截图
 ![image](https://github.com/chxgyN/shop-admin-frontend/blob/main/img/QQ%E6%88%AA%E5%9B%BE20230428105112.png)
 ![image](https://github.com/chxgyN/shop-admin-frontend/blob/main/img/QQ%E6%88%AA%E5%9B%BE20230428105135.png)
 ![image](https://github.com/chxgyN/shop-admin-frontend/blob/main/img/QQ%E6%88%AA%E5%9B%BE20230428105152.png)
