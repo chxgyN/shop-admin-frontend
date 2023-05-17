@@ -118,6 +118,7 @@
 import { defineComponent, ref } from 'vue'
 import { PURCHASE_ORDER_STATUS } from '@/constants/constants'
 import isOperator from '@/hook/isOperator'
+import { PurchaseStatusStrategy } from './purchaseStatusStrategy'
 import isPermissions from '@/hook/isPermissions'
 
 export default defineComponent({
@@ -136,16 +137,18 @@ export default defineComponent({
   computed: {
     // 根据下一次采购状态和权限决定是否禁用按钮
     canChangePurchaseStatus () {
-      if (this.nextActionName === '未开始') {
-        return true
-      } else if (this.nextActionName === '采购完成') {
-        return isPermissions('PURCHASE_ALL') || isOperator(this.detailData.purchaserAccount.value)
-      } else if (this.nextActionName === '入库完成') {
-        return isPermissions('STORAGE')
-      } else if (this.nextActionName === '订单已完成') {
-        return false
-      }
-      return false
+      // if (this.nextActionName === '未开始') {
+      //   return true
+      // } else if (this.nextActionName === '采购完成') {
+      //   return isPermissions('PURCHASE_ALL') 
+      //   // || isOperator(this.detailData.purchaserAccount.value)
+      // } else if (this.nextActionName === '入库完成') {
+      //   return isPermissions('STORAGE')
+      // } else if (this.nextActionName === '订单已完成') {
+      //   return false
+      // }
+      // return false
+      return PurchaseStatusStrategy(this.nextActionName)
     },
 
     // 通过purchaseStatus属性获取下一次的采购状态

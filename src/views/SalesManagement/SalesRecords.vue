@@ -309,8 +309,8 @@ export default defineComponent({
           }, 0);
           setTimeout(() => {
             this.startIndex = ~~((this.$refs.scrollContainer.scrollTop) / this.itemHeight);
-            console.log(this.startIndex , this.endIndex);
-            console.log(this.blankFillStyle.paddingTop, this.blankFillStyle.paddingBottom);
+            // console.log(this.startIndex , this.endIndex);
+            // console.log(this.blankFillStyle.paddingTop, this.blankFillStyle.paddingBottom);
           }, 0);
         }
         

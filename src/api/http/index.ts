@@ -24,13 +24,8 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   response => {
-    
     return Promise.resolve(response)
-
   },
-  error => {
-
-  }
 )
 
 
@@ -38,6 +33,7 @@ export default async ({ url = '', data = {}, method = '' }: requestDataType) => 
   // method = method.toUpperCase()
   url = BASE_URL + url
   let res = null
+  
   if (method === 'GET') {
     // 处理get请求的参数
     let dataStr = ''
