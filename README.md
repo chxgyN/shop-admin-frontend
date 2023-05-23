@@ -36,8 +36,7 @@ yarn lint
 ![image](https://github.com/chxgyN/shop-admin-frontend/blob/main/img/QQ%E6%88%AA%E5%9B%BE20230428105252.png)
 ![image](https://github.com/chxgyN/shop-admin-frontend/blob/main/img/QQ%E6%88%AA%E5%9B%BE20230428105304.png)
 ![image](https://github.com/chxgyN/shop-admin-frontend/blob/main/img/QQ%E6%88%AA%E5%9B%BE20230428105319.png)
-![image](https://github.com/chxgyN/shop-admin-frontend/blob/main/img/QQ%E6%88%AA%E5%9B%BE20230428105340.png)
-![image](https://github.com/chxgyN/shop-admin-frontend/blob/main/img/QQ%E6%88%AA%E5%9B%BE20230428105422.png)
+
 
 ## 联系作者
 chxgyN@outlook.com
