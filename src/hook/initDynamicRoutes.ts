@@ -2,6 +2,7 @@ import router from "@/router"
 import { ROLE_LIST } from "@/constants/constants"
 import store from "@/store"
 
+// 判断权限，动态添加路由
 export default function() {
     const userManagement = {
         path: '/userManagement',

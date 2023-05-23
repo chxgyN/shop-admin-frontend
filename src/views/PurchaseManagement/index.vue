@@ -290,6 +290,11 @@ export default defineComponent({
     }
 
     // 采购添加 - 商品数量规则
+    // const strategies = {
+    //   lessThanOne: function(){
+
+    //   },
+    // }
     const purchaseQuantityRule = {
       validator: (rule: any, value: any, cb: any) => {
         const idx = rule.field.split('.')[1]
@@ -299,7 +304,8 @@ export default defineComponent({
         } 
         else if (value > item.inventoryCeiling - item.inventory) {
           cb(new Error('数量不能超过库存上限'))
-        } else {
+        } 
+        else {
           cb()
         }
       },

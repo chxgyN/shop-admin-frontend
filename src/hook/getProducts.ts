@@ -2,13 +2,14 @@ import { getAllProducts } from '@/api/api'
 import { getProdectResType } from '@/api/types/product'
 // import debounce from 'lodash/debounce'
 
+// 查询限制和页数限制，展示商品信息
 export default async function getProducts(allFilters: any,pageIdx:number = 1){
     const filters = Object.keys(allFilters).reduce((res: any, key: string) => {
         if (key !== 'refresh' && allFilters[key]) {
           res[key] = allFilters[key]
         }
         return res
-      }, {})
+    }, {})
     const pagination = {
         total: 0,
         pageIdx: 1,

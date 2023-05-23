@@ -117,9 +117,9 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { PURCHASE_ORDER_STATUS } from '@/constants/constants'
-import isOperator from '@/hook/isOperator'
+// import isOperator from '@/hook/isOperator'
 import { PurchaseStatusStrategy } from './purchaseStatusStrategy'
-import isPermissions from '@/hook/isPermissions'
+// import isPermissions from '@/hook/isPermissions'
 
 export default defineComponent({
   name: 'OrderDetail',
@@ -137,7 +137,10 @@ export default defineComponent({
   computed: {
     // 根据下一次采购状态和权限决定是否禁用按钮
     canChangePurchaseStatus () {
-      // if (this.nextActionName === '未开始') {
+      return PurchaseStatusStrategy(this.nextActionName)
+    },
+
+          // if (this.nextActionName === '未开始') {
       //   return true
       // } else if (this.nextActionName === '采购完成') {
       //   return isPermissions('PURCHASE_ALL') 
@@ -148,8 +151,6 @@ export default defineComponent({
       //   return false
       // }
       // return false
-      return PurchaseStatusStrategy(this.nextActionName)
-    },
 
     // 通过purchaseStatus属性获取下一次的采购状态
     nextActionName () {      

@@ -73,7 +73,6 @@ export default defineComponent({
     }
   },
   methods: {
-    // async login () {
     login() {
       this.$refs.LoginForm.validate(async (isValid: boolean) => {
         if (isValid) {
@@ -83,15 +82,15 @@ export default defineComponent({
           })
           // console.log(res);
           
-          if (res.code === 0) {
-            const user = {
-              account: this.loginForm.account,
-              password: this.loginForm.password,
-              username: res.data.username,
-              // avatar: res.data.avatar,
-              role: res.data.role,
-              token:res.data.token
-            }
+        if (res.code === 0) {
+          const user = {
+            account: this.loginForm.account,
+            password: this.loginForm.password,
+            username: res.data.username,
+            // avatar: res.data.avatar,
+            role: res.data.role,
+            token:res.data.token
+          }
             
             if (this.loginForm.rememberUser) {
               // 记住用户

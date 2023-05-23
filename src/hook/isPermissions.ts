@@ -5,8 +5,8 @@ import { useStore } from 'vuex'
 export default function(permissions:String) {
     const store = useStore()
     const role = store.state.user.role
-    if(!role){
-        return false
+    if(!role) {
+            return false
     }
     // includes可以判断数组，可以判断字符串 是否包含 permissions
     return ROLE_LIST[role].auth.includes(permissions)
